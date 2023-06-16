@@ -1,0 +1,179 @@
+msgHello: Hello! To let me know what I need to do with your message, please, use the /issue_create command or reply one of messages above
+
+msgBye: Good luck! )
+
+msgHelp: (WIP...help)
+
+msgSettings: |-
+  <b>Settings</b>
+  
+  Please, select an settings you want to change
+
+msgSettingsRdmnAcc: |-
+  <b>Settings → Redmine → Account</b>
+  
+  Current related Redmine account:
+  {{- if .Login }}
+    <i>{{ .FirstName }} {{ .LastName }}</i> (<code>{{ .Login }}</code>)
+  {{ else }} <i>none</i>
+  {{ end }}
+
+msgLangSelect: Select language
+
+msgInitLang: Hi! Select language
+
+msgInitRdmnApiKeySet: |-
+  Send me a Redmine account API key you want to link with
+
+msgInitMode: If you already have account in our Customer Care System you may press Authorize button below or press Contact us otherwise
+
+msgInitEnd: |-
+  Welcome to Support Bot, {{ .FirstName }}!
+
+  Bot settings up finished and now you may work with issues.
+
+msgAPIKeyIncorrect: Incorrect API key, I can't to link you with any account
+
+msgForbidden: You are unable to interact with bot. Check your Redmine account is exist and active
+
+msgOrphanedReply: Message you've replied not related with any issue
+
+msgSettingsRdmnApiKeySet: |-
+  <b>Settings → Redmine → Account</b>
+  
+  Send me a Redmine account API key you want to link with
+
+msgSettingsRdmn: |-
+  <b>Settings → Redmine</b>
+  
+  Please, select a Redmine settings you want to change
+
+msgSettingsLang: |-
+  <b>Settings → Language</b>
+
+  Select a language you prefer to interact with bot
+
+msgIssueCreate: |-
+  <b>Creating new issue</b>
+  
+  Please, select a settings you want to change for new issue and press create new issue
+  
+  Project: <i>{{.Project}}</i>
+  Priority: <i>{{.Priority}}</i>
+
+msgIssueCreated: |-
+  <a href='{{ .IssueURL }}'>{{ .Project }} - #{{ .IssueID }} | {{ .IssueSubject | escapeHTML }}</a>
+  <b>New issue created</b>{{ if .IsPrivateIssue }} ⭕️{{ end }}
+
+  <b>Author</b>: <i>{{ .Author }}</i>
+  <b>Status</b>: <i>{{ .Status }}</i>
+  <b>Priority</b>: <i>{{ .Priority }}</i>
+  <b>Assigned</b>: <i>{{ .AssignedTo }}</i>
+  
+  {{ .Description | escapeHTML }}
+
+msgIssueUpdated: |-
+  <a href='{{ .IssueURL }}'>{{ .Project }} - #{{ .IssueID }} | {{ .IssueSubject | escapeHTML }}</a>
+  <b>Issue updated</b> (<i>{{ .Author }}</i>){{ if .IsPrivateIssue }} ⭕️{{ end }}
+  {{ if 1 }}{{ end }}
+  {{- if .Status }}
+  <b>Status</b>: <i>{{ .Status }}</i>
+  {{- end -}}
+  {{ if .Priority }}
+  <b>Priority</b>: <i>{{ .Priority }}</i>
+  {{- end -}}
+  {{ if .Tracker }}
+  <b>Tracker</b>: <i>{{ .Tracker }}</i>
+  {{- end -}}
+  {{ if .Category }}
+  <b>Category</b>: <i>{{ .Category }}</i>
+  {{- end -}}
+  {{ if .AssignedTo }}
+  <b>Assigned</b>: <i>{{ .AssignedTo }}</i>
+  {{- end -}}
+  {{ if or .Status .Priority .Tracker .Category .AssignedTo }}
+  {{ end }}
+  {{- if .Description }}
+  <b>Issue description has been changed:</b>
+  _____
+  {{ .Description }}
+  _____
+  {{ end }}
+  {{- if .Notes }}
+  {{ if .IsPrivateNotes }}🔕 {{ end }}{{ .Notes | escapeHTML }}
+  {{ end }}
+
+msgIssueCreateProject: |-
+  <b>Creating new issue → Project</b>
+  
+  Please, select a <b>project</b> for new issue. Also you may send me a message with a regex to filter projects you need
+  
+  <b>Project</b>: <i>{{ .Project }}</i>
+  <b>Priority</b>: <i>{{ .Priority }}</i>
+
+msgIssueCreatePriority: |-
+  <b>Creating new issue → Priority</b>
+  
+  Please, select a <b>priority</b> for new issue
+  
+  <b>Project</b>: <i>{{ .Project }}</i>
+  <b>Priority</b>: <i>{{ .Priority }}</i>
+
+msgIssueCreateSubject: |-
+  <b>Creating new issue → Subject</b>
+  
+  Send me a <b>subject</b> for new issue
+  
+  <b>Project</b>: <i>{{ .Project }}</i>
+  <b>Priority</b>: <i>{{ .Priority }}</i>
+
+msgIssueCreateDescription: |-
+  <b>Creating new issue → Description</b>
+  
+  Send me a <b>description</b> for new issue or leave it empty
+  
+  <b>Project</b>: <i>{{ .Project }}</i>
+  <b>Priority</b>: <i>{{ .Priority }}</i>
+  <b>Subject</b>: <i>{{ .Subject | escapeHTML }}</i>
+
+msgIssueCreateConfirm: |-
+  <b>Creating new issue → Confirm</b>
+  
+  Please, check a settings and create new issue
+  
+  <b>Project</b>: <i>{{ .Project }}</i>
+  <b>Priority</b>: <i>{{ .Priority }}</i>
+  <b>Subject</b>: <i>{{ .Subject | escapeHTML }}</i>
+  <b>Description</b>: <i>{{ .Description | escapeHTML }}</i>
+
+msgIssueCreateEnd: |-
+  <b>New issues created</b>
+  <a href='{{ .IssueURL }}'>{{ .Project }} - #{{ .IssueID }} | {{ .IssueSubject | escapeHTML }}</a>
+
+  <i>You may reply message to add new comment into issue</i>
+
+msgFeedbackGreetings: |-
+  Now you can write us a questions you interesting and we will answer you in this chat as soon as it possible!
+
+msgFeedbackIssueUpdated: |-
+  {{ .Notes }}
+
+buttonOk: Ok
+buttonBack: Back
+buttonQuit: Quit
+buttonCancel: Cancel
+buttonPrevPage: «
+buttonNextPage: »
+buttonRedmine: Redmine
+buttonAccount: Account
+buttonLink: Link with other account
+buttonFavoriteProjects: Favorite projects
+buttonLanguage: Language
+buttonEN: English
+buttonRU: Русский
+buttonProject: Project
+buttonPriority: Priority
+buttonCreateIssue: Create issue ✅
+buttonLeaveEmpty: Leave empty
+buttonAuthorize: Authorize
+buttonContactUs: Contact us
