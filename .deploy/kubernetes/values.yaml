@@ -1,0 +1,96 @@
+defaultImage: nixyslab/nxs-support-bot
+
+releasePrefix: "-"
+
+generic:
+  labels:
+    app: nxs-support-bot
+
+secrets:
+  nxs-support-bot-env:
+    data:
+      SECRET_TOKEN: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      MYSQL_HOST: mysql.host
+      MYSQL_PORT: 3306
+      MYSQL_DB: nxs-support-bot-prod
+      MYSQL_USER: nxs-support-bot-prod
+      MYSQL_PASSWORD: XXXXXXXXXX
+      REDMINE_HOST: https://your.redmine.org
+      REDMINE_API_KEY: XXXXXXXXX
+      TELEGRAM_API_TOKEN: XXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+configMaps:
+  nxs-support-bot-config:
+    data:
+      nxs-support-bot.conf: |
+        loglevel: debug
+        api:
+          secretToken: ENV:SECRET_TOKEN
+        mysql:
+          host: ENV:MYSQL_HOST
+          port: ENV:MYSQL_PORT
+          db: ENV:MYSQL_DB
+          user: ENV:MYSQL_USER
+          password: ENV:MYSQL_PASSWORD
+        redmine:
+          host: ENV:REDMINE_HOST
+          key: ENV:REDMINE_API_KEY
+          feedback:
+            projectIdentifier: identifier
+            userID: 0
+        redis:
+          host: nxs-support-bot-redis-master
+          port: 6379
+        telegram:
+          apiToken: ENV:TELEGRAM_API_TOKEN
+
+deployments:
+  '':
+    extraSelectorLabels:
+      app: nxs-support-bot
+    affinity:
+      nodeAffinity: {}
+      podAntiAffinity: {}
+      podAffinity: {}
+    podAnnotations:
+      checksum/nxs-support-bot-env: '{{ include "helpers.workload.checksum" (index $.Values.secrets "nxs-support-bot-env") }}'
+      checksum/nxs-support-bot-config: '{{ include "helpers.workload.checksum" (index $.Values.secrets "nxs-support-bot-config") }}'
+    strategy:
+      type: Recreate
+    containers:
+    - name: nxs-support-bot
+      envFrom:
+      - secretRef:
+          name: nxs-support-bot-env
+      volumeMounts:
+      - mountPath: /app.conf
+        name: nxs-support-bot-config
+        subPath: nxs-support-bot.conf
+    volumes:
+    - name: nxs-support-bot-config
+      type: configMap
+      items:
+      - key: nxs-support-bot.conf
+        path: nxs-support-bot.conf
+
+hooks:
+  nxs-support-bot-migration-up:
+    kind: "pre-install,pre-upgrade"
+    weight: "1"
+    deletePolicy: "before-hook-creation"
+    affinity:
+      nodeAffinity: {}
+      podAntiAffinity: {}
+      podAffinity: {}
+    containers:
+    - name: migration-up
+      image: nixyslab/nxs-support-bot-migrations
+      args:
+      - -path
+      - /migrations
+      - -database
+      - mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/$(MYSQL_DB)?multiStatements=true
+      - up
+      envFrom:
+      - secretRef:
+          name: nxs-support-bot-env

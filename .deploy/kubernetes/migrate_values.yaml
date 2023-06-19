@@ -1,0 +1,67 @@
+releasePrefix: "-"
+
+generic:
+  labels:
+    app: migrations
+
+configMaps:
+  migrate-conf:
+    data:
+      migrate.conf: |
+        src:
+          mysql:
+            host: mysql.host
+            port: 3306
+            db: db
+            user: user
+            password: XXXXXXXXXX
+          redis:
+            host: redis.host
+            port: 6379
+        dst:
+          mysql:
+            host: ENV:MYSQL_HOST
+            port: ENV:MYSQL_PORT
+            db: ENV:MYSQL_DB
+            user: ENV:MYSQL_USER
+            password: ENV:MYSQL_PASSWORD
+
+secrets:
+  migrations-env:
+    data:
+      MYSQL_HOST: mysql.host
+      MYSQL_PORT: 3306
+      MYSQL_DB: nxs-support-bot
+      MYSQL_USER: nxs-support-bot
+      MYSQL_PASSWORD: XXXXXXXXXX
+
+jobs:
+  migrations:
+    initContainers:
+    - name: nxs-support-bot-migrations
+      image: nixyslab/nxs-support-bot-migrations
+      args:
+      - -path
+      - /migrations
+      - -database
+      - mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/$(MYSQL_DB)?multiStatements=true
+      - up
+      envFrom:
+      - secretRef:
+          name: migrations-env
+    containers:
+    - name: nxs-support-bot-migrate
+      image: nixyslab/nxs-support-bot-migrate
+      envFrom:
+      - secretRef:
+          name: migrations-env
+      volumeMounts:
+      - mountPath: /app.conf
+        name: migrate-conf
+        subPath: migrate.conf
+    volumes:
+    - name: migrate-conf
+      type: configMap
+      items:
+      - key: migrate.conf
+        path: migrate.conf

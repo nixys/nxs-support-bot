@@ -1,0 +1,58 @@
+x-default: &default
+  env_file:
+  - .env
+  networks:
+  - docker-lan
+services:
+  redis:
+    container_name: redis
+    restart: always
+    image: bitnami/redis:latest
+    <<: *default
+    volumes:
+    - redis:/bitnami/redis/data
+  mysql:
+    image: percona:8
+    restart: always
+    container_name: mysql
+    <<: *default
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    volumes:
+    - mysql:/var/lib/mysql
+  migration:
+    image: nixyslab/nxs-support-bot-migrations:latest
+    container_name: migration
+    <<: *default
+    command:
+    - -database
+    - mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}?multiStatements=true
+    - -path
+    - /migrations
+    - up
+    depends_on:
+      mysql:
+        condition: service_healthy
+  supportbot:
+    image: nixyslab/nxs-support-bot:latest
+    restart: always
+    container_name: supportbot
+    <<: *default
+    configs:
+    - app.conf
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+
+configs:
+  app.conf:
+    file: ./app.conf
+
+volumes:
+  redis:
+  mysql:
+
+networks:
+  docker-lan: {}
