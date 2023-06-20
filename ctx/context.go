@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"time"
 
-	"git.nixys.ru/apps/nxs-support-bot/ds/primedb"
-	"git.nixys.ru/apps/nxs-support-bot/ds/redmine"
-	tgbot "git.nixys.ru/apps/nxs-support-bot/modules/bot"
-	"git.nixys.ru/apps/nxs-support-bot/modules/cache"
-	"git.nixys.ru/apps/nxs-support-bot/modules/issues"
-	"git.nixys.ru/apps/nxs-support-bot/modules/localization"
-	"git.nixys.ru/apps/nxs-support-bot/modules/task-handlers/rdmnhndlr"
-	"git.nixys.ru/apps/nxs-support-bot/modules/users"
 	"github.com/docker/go-units"
 	appctx "github.com/nixys/nxs-go-appctx/v2"
+	"github.com/nixys/nxs-support-bot/ds/primedb"
+	"github.com/nixys/nxs-support-bot/ds/redmine"
+	tgbot "github.com/nixys/nxs-support-bot/modules/bot"
+	"github.com/nixys/nxs-support-bot/modules/cache"
+	"github.com/nixys/nxs-support-bot/modules/issues"
+	"github.com/nixys/nxs-support-bot/modules/localization"
+	"github.com/nixys/nxs-support-bot/modules/task-handlers/rdmnhndlr"
+	"github.com/nixys/nxs-support-bot/modules/users"
 )
 
 // Ctx defines application custom context

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"git.nixys.ru/apps/nxs-support-bot/misc"
-	"git.nixys.ru/apps/nxs-support-bot/modules/localization"
+	"github.com/nixys/nxs-support-bot/misc"
+	"github.com/nixys/nxs-support-bot/modules/localization"
 )
 
 type UpdatedData struct {

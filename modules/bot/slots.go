@@ -1,8 +1,8 @@
 package tgbot
 
 import (
-	"git.nixys.ru/apps/nxs-support-bot/misc"
-	"git.nixys.ru/apps/nxs-support-bot/modules/issues"
+	"github.com/nixys/nxs-support-bot/misc"
+	"github.com/nixys/nxs-support-bot/modules/issues"
 )
 
 const (

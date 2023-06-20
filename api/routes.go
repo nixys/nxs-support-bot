@@ -1,8 +1,8 @@
 package api
 
 import (
-	"git.nixys.ru/apps/nxs-support-bot/api/endpoints"
-	"git.nixys.ru/apps/nxs-support-bot/ctx"
+	"github.com/nixys/nxs-support-bot/api/endpoints"
+	"github.com/nixys/nxs-support-bot/ctx"
 
 	"github.com/gin-gonic/gin"
 	appctx "github.com/nixys/nxs-go-appctx/v2"

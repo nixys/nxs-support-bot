@@ -6,7 +6,7 @@ import (
 
 	appctx "github.com/nixys/nxs-go-appctx/v2"
 
-	"git.nixys.ru/apps/nxs-support-bot/ctx"
+	"github.com/nixys/nxs-support-bot/ctx"
 )
 
 // Runtime executes the routine

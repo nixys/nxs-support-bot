@@ -6,10 +6,10 @@ import (
 	"sort"
 	"strings"
 
-	"git.nixys.ru/apps/nxs-support-bot/ds/primedb"
-	"git.nixys.ru/apps/nxs-support-bot/ds/redmine"
-	"git.nixys.ru/apps/nxs-support-bot/misc"
-	"git.nixys.ru/apps/nxs-support-bot/modules/cache"
+	"github.com/nixys/nxs-support-bot/ds/primedb"
+	"github.com/nixys/nxs-support-bot/ds/redmine"
+	"github.com/nixys/nxs-support-bot/misc"
+	"github.com/nixys/nxs-support-bot/modules/cache"
 )
 
 type Settings struct {

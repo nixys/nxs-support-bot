@@ -3,8 +3,8 @@ package cache
 import (
 	"fmt"
 
-	"git.nixys.ru/apps/nxs-support-bot/ds/redis"
-	"git.nixys.ru/apps/nxs-support-bot/ds/redmine"
+	"github.com/nixys/nxs-support-bot/ds/redis"
+	"github.com/nixys/nxs-support-bot/ds/redmine"
 )
 
 // Cache it is a module context structure

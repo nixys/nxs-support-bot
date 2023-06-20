@@ -1,6 +1,6 @@
 package primedb
 
-import "git.nixys.ru/apps/nxs-support-bot/misc"
+import "github.com/nixys/nxs-support-bot/misc"
 
 const UsersTableName = "users"
 

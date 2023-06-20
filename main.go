@@ -9,10 +9,10 @@ import (
 	appctx "github.com/nixys/nxs-go-appctx/v2"
 	"github.com/sirupsen/logrus"
 
-	"git.nixys.ru/apps/nxs-support-bot/ctx"
-	apiserver "git.nixys.ru/apps/nxs-support-bot/routines/api-server"
-	appcache "git.nixys.ru/apps/nxs-support-bot/routines/app-cache"
-	"git.nixys.ru/apps/nxs-support-bot/routines/bot"
+	"github.com/nixys/nxs-support-bot/ctx"
+	apiserver "github.com/nixys/nxs-support-bot/routines/api-server"
+	appcache "github.com/nixys/nxs-support-bot/routines/app-cache"
+	"github.com/nixys/nxs-support-bot/routines/bot"
 )
 
 func main() {

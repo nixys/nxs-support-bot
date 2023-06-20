@@ -1,4 +1,4 @@
-module git.nixys.ru/apps/nxs-support-bot
+module github.com/nixys/nxs-support-bot
 
 go 1.19
 

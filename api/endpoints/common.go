@@ -3,7 +3,7 @@ package endpoints
 import (
 	"net/http"
 
-	"git.nixys.ru/apps/nxs-support-bot/ctx"
+	"github.com/nixys/nxs-support-bot/ctx"
 
 	"github.com/gin-gonic/gin"
 	appctx "github.com/nixys/nxs-go-appctx/v2"

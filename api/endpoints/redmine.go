@@ -5,11 +5,11 @@ import (
 	"io"
 	"net/http"
 
-	"git.nixys.ru/apps/nxs-support-bot/ctx"
-	"git.nixys.ru/apps/nxs-support-bot/misc"
-	"git.nixys.ru/apps/nxs-support-bot/modules/task-handlers/rdmnhndlr"
 	"github.com/gin-gonic/gin"
 	appctx "github.com/nixys/nxs-go-appctx/v2"
+	"github.com/nixys/nxs-support-bot/ctx"
+	"github.com/nixys/nxs-support-bot/misc"
+	"github.com/nixys/nxs-support-bot/modules/task-handlers/rdmnhndlr"
 
 	"github.com/sirupsen/logrus"
 )

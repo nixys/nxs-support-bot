@@ -3,8 +3,8 @@ package cache
 import (
 	"fmt"
 
-	"git.nixys.ru/apps/nxs-support-bot/ds/redis"
-	"git.nixys.ru/apps/nxs-support-bot/misc"
+	"github.com/nixys/nxs-support-bot/ds/redis"
+	"github.com/nixys/nxs-support-bot/misc"
 )
 
 type Priority struct {

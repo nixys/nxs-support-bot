@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"git.nixys.ru/apps/nxs-support-bot/misc"
 	"github.com/go-redis/redis"
+	"github.com/nixys/nxs-support-bot/misc"
 )
 
 const projectsKey = "cache:projects"

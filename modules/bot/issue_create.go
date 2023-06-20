@@ -1,10 +1,10 @@
 package tgbot
 
 import (
-	"git.nixys.ru/apps/nxs-support-bot/misc"
-	"git.nixys.ru/apps/nxs-support-bot/modules/localization"
-	"git.nixys.ru/apps/nxs-support-bot/modules/users"
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/nxs-support-bot/misc"
+	"github.com/nixys/nxs-support-bot/modules/localization"
+	"github.com/nixys/nxs-support-bot/modules/users"
 )
 
 func issueCreateCmd(t *tg.Telegram, sess *tg.Session, cmd string, args string) (tg.CommandHandlerRes, error) {

@@ -3,8 +3,8 @@ package rdmnhndlr
 import (
 	"fmt"
 
-	"git.nixys.ru/apps/nxs-support-bot/misc"
-	"git.nixys.ru/apps/nxs-support-bot/modules/localization"
+	"github.com/nixys/nxs-support-bot/misc"
+	"github.com/nixys/nxs-support-bot/modules/localization"
 )
 
 type CreatedData struct {

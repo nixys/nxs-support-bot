@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"git.nixys.ru/apps/nxs-support-bot/api"
-	"git.nixys.ru/apps/nxs-support-bot/ctx"
+	"github.com/nixys/nxs-support-bot/api"
+	"github.com/nixys/nxs-support-bot/ctx"
 
 	appctx "github.com/nixys/nxs-go-appctx/v2"
 )

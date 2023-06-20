@@ -1,8 +1,8 @@
 package ctx
 
 import (
-	"git.nixys.ru/apps/nxs-support-bot/misc"
 	conf "github.com/nixys/nxs-go-conf"
+	"github.com/nixys/nxs-support-bot/misc"
 )
 
 type confOpts struct {

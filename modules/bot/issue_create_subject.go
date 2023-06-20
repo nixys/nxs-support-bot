@@ -3,8 +3,8 @@ package tgbot
 import (
 	"strings"
 
-	"git.nixys.ru/apps/nxs-support-bot/modules/localization"
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/nxs-support-bot/modules/localization"
 )
 
 func issueCreateSubjectState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {

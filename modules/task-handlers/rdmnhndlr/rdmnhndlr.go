@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 
-	"git.nixys.ru/apps/nxs-support-bot/misc"
-	tgbot "git.nixys.ru/apps/nxs-support-bot/modules/bot"
-	"git.nixys.ru/apps/nxs-support-bot/modules/issues"
-	"git.nixys.ru/apps/nxs-support-bot/modules/localization"
-	"git.nixys.ru/apps/nxs-support-bot/modules/users"
+	"github.com/nixys/nxs-support-bot/misc"
+	tgbot "github.com/nixys/nxs-support-bot/modules/bot"
+	"github.com/nixys/nxs-support-bot/modules/issues"
+	"github.com/nixys/nxs-support-bot/modules/localization"
+	"github.com/nixys/nxs-support-bot/modules/users"
 )
 
 type Settings struct {

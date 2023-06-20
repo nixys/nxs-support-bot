@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io"
 
-	"git.nixys.ru/apps/nxs-support-bot/misc"
 	rdmn "github.com/nixys/nxs-go-redmine/v4"
+	"github.com/nixys/nxs-support-bot/misc"
 )
 
 type UploadData struct {

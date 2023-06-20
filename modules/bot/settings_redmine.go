@@ -1,8 +1,8 @@
 package tgbot
 
 import (
-	"git.nixys.ru/apps/nxs-support-bot/modules/localization"
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/nxs-support-bot/modules/localization"
 )
 
 func settingsRdmnState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {

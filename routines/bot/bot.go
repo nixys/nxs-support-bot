@@ -3,8 +3,8 @@ package bot
 import (
 	"context"
 
-	"git.nixys.ru/apps/nxs-support-bot/ctx"
 	appctx "github.com/nixys/nxs-go-appctx/v2"
+	"github.com/nixys/nxs-support-bot/ctx"
 )
 
 // Runtime executes the routine

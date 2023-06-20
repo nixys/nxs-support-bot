@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"sync"
 
-	"git.nixys.ru/apps/nxs-support-bot/misc"
 	"github.com/hashicorp/go-multierror"
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/nxs-support-bot/misc"
 )
 
 type SendData struct {

@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"git.nixys.ru/apps/nxs-support-bot/misc"
-	"git.nixys.ru/apps/nxs-support-bot/modules/cache"
-	"git.nixys.ru/apps/nxs-support-bot/modules/issues"
-	"git.nixys.ru/apps/nxs-support-bot/modules/localization"
-	"git.nixys.ru/apps/nxs-support-bot/modules/users"
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/nxs-support-bot/misc"
+	"github.com/nixys/nxs-support-bot/modules/cache"
+	"github.com/nixys/nxs-support-bot/modules/issues"
+	"github.com/nixys/nxs-support-bot/modules/localization"
+	"github.com/nixys/nxs-support-bot/modules/users"
 	"github.com/sirupsen/logrus"
 )
 
