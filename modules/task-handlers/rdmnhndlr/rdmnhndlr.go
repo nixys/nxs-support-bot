@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/hashicorp/go-multierror"
 	"github.com/nixys/nxs-support-bot/misc"
 	tgbot "github.com/nixys/nxs-support-bot/modules/bot"
 	"github.com/nixys/nxs-support-bot/modules/issues"
@@ -150,7 +151,7 @@ func (rh *RdmnHndlr) send(issueID int64, sd []tgbot.SendRcptData, attachments []
 	}
 
 	// Send messages
-	sr, err := rh.b.SendMessage(
+	sr, srerr := rh.b.SendMessage(
 		tgbot.SendData{
 			Rcpts: sd,
 			Files: func() []tgbot.SendFileData {
@@ -170,19 +171,16 @@ func (rh *RdmnHndlr) send(issueID int64, sd []tgbot.SendRcptData, attachments []
 			}(),
 		},
 	)
-	if err != nil {
-		return fmt.Errorf("send: %w", err)
-	}
 
 	for _, s := range sr {
 		for _, m := range s.MessageIDs {
 			if err := rh.iss.BunchAdd(s.ChatID, m, issueID); err != nil {
-				return fmt.Errorf("send: %w", err)
+				return multierror.Append(srerr, fmt.Errorf("send: %w", err))
 			}
 		}
 	}
 
-	return nil
+	return srerr
 }
 
 // feedbackUserGet gets feedback user data for specified feedback issue ID

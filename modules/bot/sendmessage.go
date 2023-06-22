@@ -64,8 +64,10 @@ func (b *Bot) SendMessage(messages SendData) ([]SentResult, error) {
 	// Prepare readers for every files for all chats
 	for _, f := range messages.Files {
 
+		ft, fr := fileTypeGet(f.ContentType, f.Reader)
+
 		// Create file readers for every Telegram receiver
-		rds := misc.MultiReaderCreate(f.Reader, l, errch)
+		rds := misc.MultiReaderCreate(fr, l, errch)
 
 		for j := 0; j < l; j++ {
 
@@ -75,7 +77,7 @@ func (b *Bot) SendMessage(messages SendData) ([]SentResult, error) {
 					FileName:  f.Name,
 					Caption:   f.Caption,
 					ParseMode: tg.ParseModeHTML,
-					FileType:  fileTypeGet(f.ContentType),
+					FileType:  ft,
 				},
 			})
 		}
