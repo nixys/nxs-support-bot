@@ -58,8 +58,6 @@ Do the following steps:
   helm -n nxs-support-bot install nxs-support-bot nixys/universal-chart -f values.yaml
   ```
 
-### Update from nxs-chat-srv
-
 ### Settings
 
 Default configuration file path: `/nxs-support-bot.conf`. File represented in yaml.
