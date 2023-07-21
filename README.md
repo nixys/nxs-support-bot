@@ -1,6 +1,6 @@
-# Nixys Support Bot
+# nxs-support-bot
 
-Nixys Support Bot lets you interact with your task tracker (at present supported Redmine only) via Telegram.
+nxs-support-bot lets you interact with your task tracker (at present supported Redmine only) via Telegram.
 
 ## Introduction
 
@@ -39,7 +39,7 @@ Modify the `docker-compose.yml` or `kubernetes manifests` according to your infr
 #### Docker-compose
 
 Do the following steps:
-- Configure Nixys Support Bot (see [Configure](#configure) section for details)
+- Configure nxs-support-bot (see [Configure](#configure) section for details)
 - Launch the Bot with command:
   ```
   docker-compose up -d
@@ -52,7 +52,7 @@ Do the following steps:
   ```
   helm repo add nixys https://registry.nixys.ru/chartrepo/public
   ```
-- Configure Nixys Support Bot (see [Configure](#configure) section for details)
+- Configure nxs-support-bot (see [Configure](#configure) section for details)
 - Launch the Bot with command:
   ```
   helm -n nxs-support-bot install nxs-support-bot nixys/universal-chart -f values.yaml
@@ -155,7 +155,7 @@ To complete the Bot installation you need to do some actions described in this s
 
 #### Redmine
 
-After you've installed and configured the Redmine, do the following to take the Nixys Support Bot collaboration.
+After you've installed and configured the Redmine, do the following to take the nxs-support-bot collaboration.
 
 ##### General
 
@@ -175,17 +175,17 @@ Last you need to do is to create a new one (or take an existing) feedback accoun
 
 Install a [Nixys Chat Redmine plugin](https://github.com/nixys/nxs-chat-redmine) into your Redmine. The only two things you have to configure this plugin (at the `/settings/plugin/nxs_chat` page in your Redmine):
 - Set `URL for notifications`. This URL is used by plugin to send issue updates to the Bot. Use a `secretToken` value from [API settings](#api-settings) to compose an URL. An URL format you need to use is following: `{PROTO}://{DOMAIN}/v1/redmine?token={SECRET_TOKEN}`
-- Set `Disable SSL verification`. If your Nixys Support Bot and Redmine both works in the local network or you do not use the SSL for Bot you need to set this option.
+- Set `Disable SSL verification`. If your nxs-support-bot and Redmine both works in the local network or you do not use the SSL for Bot you need to set this option.
 
-#### Nixys Support Bot
+#### nxs-support-bot
 
-Now you need to set up the Nixys Support Bot config file (see options description in [settings section](#settings)). To configure the Bot you need to change the file located according to the way you choose to install:
+Now you need to set up the nxs-support-bot config file (see options description in [settings section](#settings)). To configure the Bot you need to change the file located according to the way you choose to install:
 - For `Docker Compose`: file `.deploy/docker-compose/.env`
 - For `Kubernetes`: file `.deploy/kubernetes/values.yaml`, secret `nxs-support-bot-env` and configmap `nxs-support-bot-config`
 
 If you didn't use [nxs-chat-srv](https://github.com/nixys/nxs-chat-srv) skip this section and back to installation in accordance with method you selected (either [Docker-compose](#docker-compose) or [Kubernetes](#kubernetes)).
 
-Otherwise you need to migrate your old data to new version of Bot with [Nixys Support Bot Migrate](https://github.com/nixys/nxs-support-bot-migrate). See the section below for details.
+Otherwise you need to migrate your old data to new version of Bot with [nxs-support-bot-migrate](https://github.com/nixys/nxs-support-bot-migrate). See the section below for details.
 
 ##### Update from nxs-chat-srv
 
@@ -194,24 +194,24 @@ Choose the way for your installation method.
 **Docker Compose**
 
 Do the following steps:
-- Fill the `.deploy/docker-compose/.env_migration` file with settings to connect to `nxs-chat-srv` databases (MySQL and Redis). See [Nixys Support Bot Migrate settings section](https://github.com/nixys/nxs-support-bot-migrate#settings) for details
+- Fill the `.deploy/docker-compose/.env_migration` file with settings to connect to `nxs-chat-srv` databases (MySQL and Redis). See [nxs-support-bot-migrate settings section](https://github.com/nixys/nxs-support-bot-migrate#settings) for details
 - Stop the `nxs-chat-srv`
 - Start the data migration process from `.deploy/docker-compose` directory:
   ```
   docker compose -f docker-compose-migrate.yml up -d
   ```
-- After process is completed make sure the Nixys Support Bot successfully started
+- After process is completed make sure the nxs-support-bot successfully started
 - Stop and delete the data for migration process:
   ```
   docker compose -f docker-compose-migrate.yml down
   rm docker-compose-migrate.yml .env_migrate
   ```
-Go back to the [Docker-compose](#docker-compose) and follow the instructions to complete the Nixys Support Bot installation.
+Go back to the [Docker-compose](#docker-compose) and follow the instructions to complete the nxs-support-bot installation.
 
 **Kubernetes**
 
 Do the following steps:
-- Fill the `.deploy/kubernetes/migrate_values.yaml` file with settings to connect to `nxs-chat-srv` databases (MySQL and Redis) and `Nixys Support Bot` database (MySQL). See [Nixys Support Bot Migrate settings section](https://github.com/nixys/nxs-support-bot-migrate#settings) for details
+- Fill the `.deploy/kubernetes/migrate_values.yaml` file with settings to connect to `nxs-chat-srv` databases (MySQL and Redis) and `nxs-support-bot` database (MySQL). See [nxs-support-bot-migrate settings section](https://github.com/nixys/nxs-support-bot-migrate#settings) for details
 - Stop the `nxs-chat-srv`
 - Start the data migration process from `.deploy/kubernetes` directory:
   ```
@@ -223,7 +223,7 @@ Do the following steps:
   helm -n nxs-support-bot uninstall migrate
   ```
 
-Go back to the [Kubernetes](#kubernetes) and follow the instructions to complete the Nixys Support Bot installation.
+Go back to the [Kubernetes](#kubernetes) and follow the instructions to complete the nxs-support-bot installation.
 
 ## Roadmap
 
@@ -236,10 +236,10 @@ Following features are already in backlog for our development team and will be r
 
 ## Feedback
 
-For support and feedbaсk please contact me:
+For support and feedback please contact me:
 - telegram: [@borisershov](https://t.me/borisershov)
 - e-mail: b.ershov@nixys.ru
 
 ## License
 
-Nixys Support Bot is released under the [GPLv3](LICENSE).
+nxs-support-bot is released under the [Apache License 2.0](LICENSE).
