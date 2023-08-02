@@ -48,7 +48,7 @@ Do the following steps:
 #### Kubernetes
 
 Do the following steps:
-- Install [Nixys universal Helm chart](https://github.com/nixys/nxs-universal-chart) (`Helm 3` is required):
+- Install [nxs-universal-chart](https://github.com/nixys/nxs-universal-chart) (`Helm 3` is required):
   ```
   helm repo add nixys https://registry.nixys.ru/chartrepo/public
   ```
