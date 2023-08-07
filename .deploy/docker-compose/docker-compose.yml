@@ -45,6 +45,11 @@ services:
     depends_on:
       migration:
         condition: service_completed_successfully
+# Ports setup used into the "URL for notifications" parameter for "Nixys Chat Redmine plugin".
+# See more: https://github.com/nixys/nxs-support-bot#nixys-chat-redmine-plugin
+# Uncomment lines (and change output port if you need) below if supportbot container and redmine not in joint docker network.
+#    ports:
+#       - 80:80
 
 configs:
   app.conf:
