@@ -45,6 +45,11 @@ services:
     depends_on:
       migration:
         condition: service_completed_successfully
+# `ports` setting is used in "URL for notifications" option for "Nixys Chat Redmine plugin".
+# See more for details: https://github.com/nixys/nxs-support-bot#nixys-chat-redmine-plugin
+# Uncomment lines below and change port settings (if necessary) if nxs-support-bot and Redmine works in different networks.
+#    ports:
+#       - 80:80
 
 configs:
   app.conf:
