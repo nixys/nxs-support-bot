@@ -20,6 +20,7 @@ type UpdatedData struct {
 	Priority       misc.IDName
 	Author         misc.IDName
 	AssignedTo     misc.IDName
+	MentionedUsers []misc.IDName
 	Watchers       []misc.IDName
 	Attachments    []int64
 	Journals       []UpdatedJournalData
@@ -141,6 +142,7 @@ func (rh *RdmnHndlr) IssueUpdated(data UpdatedData) error {
 				elts = append(elts, data.Author)
 				elts = append(elts, data.AssignedTo)
 				elts = append(elts, data.Watchers...)
+				elts = append(elts, data.MentionedUsers...)
 				return elts
 			}(),
 			author: rd.Author,

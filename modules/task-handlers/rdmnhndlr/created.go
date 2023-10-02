@@ -18,6 +18,7 @@ type CreatedData struct {
 	Priority       misc.IDName
 	Author         misc.IDName
 	AssignedTo     misc.IDName
+	MentionedUsers []misc.IDName
 	Watchers       []misc.IDName
 	Attachments    []int64
 	Members        map[int64]PermissionsData
@@ -32,6 +33,7 @@ func (rh *RdmnHndlr) IssueCreated(data CreatedData) error {
 				elts := []misc.IDName{}
 				elts = append(elts, data.AssignedTo)
 				elts = append(elts, data.Watchers...)
+				elts = append(elts, data.MentionedUsers...)
 				return elts
 			}(),
 			author: data.Author,

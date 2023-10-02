@@ -44,6 +44,7 @@ type issueCreateObjectRx struct {
 	IsPrivate      bool            `json:"is_private"`
 	EstimatedHours float64         `json:"estimated_hours"`
 	SpentHours     float64         `json:"spent_hours"`
+	MentionedUsers []misc.IDName   `json:"mentioned_users"`
 	CustomFields   []customFieldRx `json:"custom_fields"`
 	CreatedOn      string          `json:"created_on"`
 	UpdatedOn      string          `json:"updated_on"`
@@ -79,6 +80,7 @@ type issueUpdateObjectRx struct {
 	IsPrivate      bool           `json:"is_private"`
 	EstimatedHours float64        `json:"estimated_hours"`
 	SpentHours     float64        `json:"spent_hours"`
+	MentionedUsers []misc.IDName  `json:"mentioned_users"`
 	CreatedOn      string         `json:"created_on"`
 	UpdatedOn      string         `json:"updated_on"`
 	ClosedOn       string         `json:"closed_on"`
@@ -136,12 +138,13 @@ type attachmentRx struct {
 }
 
 type journalRx struct {
-	ID           int64       `json:"id"`
-	User         misc.IDName `json:"user"`
-	Notes        string      `json:"notes"`
-	PrivateNotes bool        `json:"private_notes"`
-	CreatedOn    string      `json:"created_on"`
-	Details      []detailRx  `json:"details"`
+	ID             int64         `json:"id"`
+	User           misc.IDName   `json:"user"`
+	Notes          string        `json:"notes"`
+	PrivateNotes   bool          `json:"private_notes"`
+	CreatedOn      string        `json:"created_on"`
+	Details        []detailRx    `json:"details"`
+	MentionedUsers []misc.IDName `json:"mentioned_users"`
 }
 
 type detailRx struct {
@@ -198,12 +201,13 @@ func Redmine(appCtx *appctx.AppContext, c *gin.Context) RouteHandlerResponse {
 						ID:   data.IssueCreateDataRx.IssueCreateObjectRx.Project.ID,
 						Name: data.IssueCreateDataRx.IssueCreateObjectRx.Project.Name,
 					},
-					Tracker:    data.IssueCreateDataRx.IssueCreateObjectRx.Tracker,
-					Status:     data.IssueCreateDataRx.IssueCreateObjectRx.Status,
-					Priority:   data.IssueCreateDataRx.IssueCreateObjectRx.Priority,
-					Author:     data.IssueCreateDataRx.IssueCreateObjectRx.Author,
-					AssignedTo: data.IssueCreateDataRx.IssueCreateObjectRx.AssignedTo,
-					Watchers:   data.IssueCreateDataRx.IssueCreateObjectRx.Watchers,
+					Tracker:        data.IssueCreateDataRx.IssueCreateObjectRx.Tracker,
+					Status:         data.IssueCreateDataRx.IssueCreateObjectRx.Status,
+					Priority:       data.IssueCreateDataRx.IssueCreateObjectRx.Priority,
+					Author:         data.IssueCreateDataRx.IssueCreateObjectRx.Author,
+					AssignedTo:     data.IssueCreateDataRx.IssueCreateObjectRx.AssignedTo,
+					Watchers:       data.IssueCreateDataRx.IssueCreateObjectRx.Watchers,
+					MentionedUsers: data.IssueCreateDataRx.IssueCreateObjectRx.MentionedUsers,
 					Attachments: func() []int64 {
 						var atts []int64
 						for _, a := range data.IssueCreateDataRx.IssueCreateObjectRx.Attachments {
@@ -267,6 +271,14 @@ func Redmine(appCtx *appctx.AppContext, c *gin.Context) RouteHandlerResponse {
 					Author:     data.IssueUpdateDataRx.IssueUpdateObjectRx.Author,
 					AssignedTo: data.IssueUpdateDataRx.IssueUpdateObjectRx.AssignedTo,
 					Watchers:   data.IssueUpdateDataRx.IssueUpdateObjectRx.Watchers,
+					MentionedUsers: func() []misc.IDName {
+						var users []misc.IDName
+						users = append(users, data.IssueUpdateDataRx.IssueUpdateObjectRx.MentionedUsers...)
+						for _, j := range data.IssueUpdateDataRx.IssueUpdateObjectRx.Journals {
+							users = append(users, j.MentionedUsers...)
+						}
+						return users
+					}(),
 					Attachments: func() []int64 {
 						var atts []int64
 						for _, a := range data.IssueUpdateDataRx.IssueUpdateObjectRx.Attachments {
