@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/nixys/nxs-support-bot/misc"
 	"github.com/pborman/getopt/v2"
 )
 
@@ -13,12 +14,13 @@ const (
 
 // Args contains arguments value read from command line
 type Args struct {
-	ConfigPath      string
-	CounterInterval *int64
+	ConfigPath string
 }
 
+var version string
+
 // ArgsRead reads arguments from command line
-func ArgsRead() Args {
+func ArgsRead() (Args, error) {
 
 	var a Args
 
@@ -40,24 +42,18 @@ func ArgsRead() Args {
 		"",
 		"Config file path")
 
-	counterInterval := args.Int64Long(
-		"counter-interval",
-		'i',
-		0,
-		"User counter interval")
-
 	args.Parse(os.Args)
 
 	/* Show help */
 	if *helpFlag == true {
 		argsHelp(args)
-		os.Exit(0)
+		return Args{}, misc.ErrArgSuccessExit
 	}
 
 	/* Show version */
 	if *versionFlag == true {
 		argsVersion()
-		os.Exit(0)
+		return Args{}, misc.ErrArgSuccessExit
 	}
 
 	/* Config path */
@@ -67,11 +63,7 @@ func ArgsRead() Args {
 		a.ConfigPath = confPathDefault
 	}
 
-	if args.IsSet("counter-interval") == true {
-		a.CounterInterval = counterInterval
-	}
-
-	return a
+	return a, nil
 }
 
 func argsHelp(args *getopt.Set) {
@@ -88,5 +80,5 @@ Additional description
 }
 
 func argsVersion() {
-	fmt.Println("1.0")
+	fmt.Println(version)
 }

@@ -54,7 +54,7 @@ func (r *Redmine) ProjectGetByIdentifier(identifier string) (Project, error) {
 		Includes: []string{"trackers"},
 	})
 	if err != nil {
-		return Project{}, fmt.Errorf("get redmine project by identifier: %w", err)
+		return Project{}, fmt.Errorf("redmine get project by identifier: %w", err)
 	}
 
 	return Project{

@@ -1,6 +1,8 @@
 package ctx
 
 import (
+	"fmt"
+
 	conf "github.com/nixys/nxs-go-conf"
 	"github.com/nixys/nxs-support-bot/misc"
 )
@@ -83,7 +85,7 @@ func confRead(confPath string) (confOpts, error) {
 
 	c.Localization.Path, err = misc.DirNormalize(c.Localization.Path)
 	if err != nil {
-		return c, err
+		return c, fmt.Errorf("conf init: %w", err)
 	}
 
 	return c, err

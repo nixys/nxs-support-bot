@@ -2,13 +2,14 @@ package apiserver
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
+	appctx "github.com/nixys/nxs-go-appctx/v3"
 	"github.com/nixys/nxs-support-bot/api"
 	"github.com/nixys/nxs-support-bot/ctx"
-
-	appctx "github.com/nixys/nxs-go-appctx/v2"
+	"github.com/sirupsen/logrus"
 )
 
 type httpServerContext struct {
@@ -16,58 +17,60 @@ type httpServerContext struct {
 	done chan interface{}
 }
 
-// Runtime executes the routine
-func Runtime(cr context.Context, appCtx *appctx.AppContext, crc chan interface{}) {
+func Runtime(app appctx.App) error {
 
-	var err error
+	cc := app.ValueGet().(*ctx.Ctx)
 
-	s := servStart(appCtx)
+	s := servStart(cc)
 
 	for {
 		select {
-		case <-cr.Done():
-			// Program termination.
-			err = servShutdown(s)
+		case <-app.SelfCtxDone():
+
+			c, f := context.WithTimeout(app.SelfCtx(), 1*time.Second)
+			defer f()
+
+			cc.Log.Debugf("api: shutting down")
+
+			err := servShutdown(c, s)
 			if err != nil {
-				appCtx.Log().Errorf("http server shutdown error: %v", err)
+
+				cc.Log.WithFields(logrus.Fields{
+					"details": err,
+				}).Errorf("api: shutdown")
+
+				err = fmt.Errorf("api: %w", err)
 			}
-			return
-		case <-crc:
-			// Updated context application data.
-			// Set the new one in current goroutine.
-			s, err = servRestart(appCtx, s)
-			if err != nil {
-				appCtx.Log().Errorf("http server reload error: %v", err)
-				appCtx.RoutineDoneSend(appctx.ExitStatusFailure)
-				return
-			}
+			return err
 		}
 	}
 }
 
-func servStart(appCtx *appctx.AppContext) *httpServerContext {
-
-	cc := appCtx.CustomCtx().(*ctx.Ctx)
+func servStart(cc *ctx.Ctx) *httpServerContext {
 
 	s := &httpServerContext{
 		Server: http.Server{
 			Addr:         cc.Conf.API.Bind,
 			ReadTimeout:  10 * time.Second,
 			WriteTimeout: 10 * time.Second,
-			Handler:      api.RoutesSet(appCtx),
+			Handler:      api.RoutesSet(cc),
 		},
 		done: make(chan interface{}),
 	}
 
 	go func() {
-		appCtx.Log().Debugf("server status: starting")
+		cc.Log.Debugf("api: starting")
 		if cc.Conf.API.TLS != nil {
 			if err := s.ListenAndServeTLS(cc.Conf.API.TLS.CertFile, cc.Conf.API.TLS.KeyFie); err != nil {
-				appCtx.Log().Debugf("server status: %v", err)
+				cc.Log.WithFields(logrus.Fields{
+					"details": err,
+				}).Debugf("api: server listen tls")
 			}
 		} else {
 			if err := s.ListenAndServe(); err != nil {
-				appCtx.Log().Debugf("server status: %v", err)
+				cc.Log.WithFields(logrus.Fields{
+					"details": err,
+				}).Debugf("api: server listen")
 			}
 		}
 		s.done <- true
@@ -76,26 +79,13 @@ func servStart(appCtx *appctx.AppContext) *httpServerContext {
 	return s
 }
 
-func servShutdown(s *httpServerContext) error {
-
-	//Create shutdown context with 10 second timeout
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+func servShutdown(c context.Context, s *httpServerContext) error {
 
 	//Shutdown the server
-	if err := s.Shutdown(ctx); err != nil {
-		return err
+	if err := s.Shutdown(c); err != nil {
+		return fmt.Errorf("server shutdown: %w", err)
 	}
 
 	<-s.done
 	return nil
-}
-
-func servRestart(appCtx *appctx.AppContext, s *httpServerContext) (*httpServerContext, error) {
-
-	if err := servShutdown(s); err != nil {
-		return nil, err
-	}
-
-	return servStart(appCtx), nil
 }

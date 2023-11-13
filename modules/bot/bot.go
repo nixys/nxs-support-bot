@@ -203,7 +203,7 @@ func Init(settings Settings) (*Bot, error) {
 			}(),
 		})
 	if err != nil {
-		return nil, fmt.Errorf("bot init error: %v", err)
+		return nil, fmt.Errorf("bot init: %w", err)
 	}
 
 	return &Bot{

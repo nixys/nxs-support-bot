@@ -1,15 +1,13 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"os"
 	"syscall"
 
-	appctx "github.com/nixys/nxs-go-appctx/v2"
-	"github.com/sirupsen/logrus"
+	appctx "github.com/nixys/nxs-go-appctx/v3"
 
 	"github.com/nixys/nxs-support-bot/ctx"
+	"github.com/nixys/nxs-support-bot/misc"
 	apiserver "github.com/nixys/nxs-support-bot/routines/api-server"
 	appcache "github.com/nixys/nxs-support-bot/routines/app-cache"
 	"github.com/nixys/nxs-support-bot/routines/bot"
@@ -17,37 +15,40 @@ import (
 
 func main() {
 
-	// Read command line arguments
-	args := ctx.ArgsRead()
-
-	appCtx, err := appctx.ContextInit(appctx.Settings{
-		CustomContext:    &ctx.Ctx{},
-		Args:             &args,
-		CfgPath:          args.ConfigPath,
-		TermSignals:      []os.Signal{syscall.SIGTERM, syscall.SIGINT},
-		ReloadSignals:    []os.Signal{syscall.SIGHUP},
-		LogrotateSignals: []os.Signal{syscall.SIGUSR1},
-		LogFormatter:     &logrus.JSONFormatter{},
-	})
+	err := appctx.Init(nil).
+		RoutinesSet(
+			map[string]appctx.RoutineParam{
+				"cache": {
+					Handler: appcache.Runtime,
+				},
+				"apiserver": {
+					Handler: apiserver.Runtime,
+				},
+				"bot": {
+					Handler: bot.Runtime,
+				},
+			},
+		).
+		ValueInitHandlerSet(ctx.AppCtxInit).
+		SignalsSet([]appctx.SignalsParam{
+			{
+				Signals: []os.Signal{
+					syscall.SIGTERM,
+				},
+				Handler: sigHandlerTerm,
+			},
+		}).
+		Run()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		switch err {
+		case misc.ErrArgSuccessExit:
+			os.Exit(0)
+		default:
+			os.Exit(1)
+		}
 	}
+}
 
-	appCtx.Log().Info("program started")
-
-	// main() body function
-	defer appCtx.MainBodyGeneric()
-
-	// Create main context
-	c := context.Background()
-
-	// Create app cache routine
-	appCtx.RoutineCreate(c, appcache.Runtime)
-
-	// Create bot routine
-	appCtx.RoutineCreate(c, bot.Runtime)
-
-	// Create API server routine
-	appCtx.RoutineCreate(c, apiserver.Runtime)
+func sigHandlerTerm(sig appctx.Signal) {
+	sig.Shutdown(nil)
 }

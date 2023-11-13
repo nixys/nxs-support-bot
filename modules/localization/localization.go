@@ -1,6 +1,7 @@
 package localization
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -17,7 +18,7 @@ func Init(path string) (Bundle, error) {
 
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
-		return Bundle{}, err
+		return Bundle{}, fmt.Errorf("localization init: %w", err)
 	}
 
 	bundle := i18n.NewBundle(language.English)
@@ -25,14 +26,14 @@ func Init(path string) (Bundle, error) {
 
 	for _, f := range files {
 		if _, err := bundle.LoadMessageFile(path + "/" + f.Name()); err != nil {
-			return Bundle{}, err
+			return Bundle{}, fmt.Errorf("localization init: %w", err)
 		}
 	}
 
 	// Init default language
 	dl, err := langSwitch(bundle, "")
 	if err != nil {
-		return Bundle{}, err
+		return Bundle{}, fmt.Errorf("localization init: %w", err)
 	}
 
 	return Bundle{
@@ -60,7 +61,7 @@ func langSwitch(b *i18n.Bundle, tag string) (Lang, error) {
 			MessageID: btn.String(),
 		})
 		if err != nil {
-			return Lang{}, err
+			return Lang{}, fmt.Errorf("lang switch: %w", err)
 		}
 
 		bb[btn] = button

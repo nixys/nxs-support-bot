@@ -24,7 +24,7 @@ func Init(s Settings) (Cache, error) {
 
 	rds, err := redis.Connect(s.RedisHost)
 	if err != nil {
-		return Cache{}, err
+		return Cache{}, fmt.Errorf("cache init: %w", err)
 	}
 
 	return Cache{

@@ -3,48 +3,50 @@ package bot
 import (
 	"context"
 
-	appctx "github.com/nixys/nxs-go-appctx/v2"
+	appctx "github.com/nixys/nxs-go-appctx/v3"
 	"github.com/nixys/nxs-support-bot/ctx"
+	"github.com/sirupsen/logrus"
 )
 
 // Runtime executes the routine
-func Runtime(cr context.Context, appCtx *appctx.AppContext, crc chan interface{}) {
+func Runtime(app appctx.App) error {
 
-	cc := appCtx.CustomCtx().(*ctx.Ctx)
+	cc := app.ValueGet().(*ctx.Ctx)
 
 	queueCh := make(chan error)
 	updatesCh := make(chan error)
 
-	queueCtx, queueCF := context.WithCancel(cr)
+	queueCtx, queueCF := context.WithCancel(app.SelfCtx())
 	defer queueCF()
 
-	updatesCtx, updatesCF := context.WithCancel(cr)
+	updatesCtx, updatesCF := context.WithCancel(app.SelfCtx())
 	defer updatesCF()
 
 	go cc.Bot.UpdatesGet(updatesCtx, updatesCh)
 	go cc.Bot.Queue(queueCtx, queueCh)
 
+	cc.Log.Debugf("telegram bot: successfully started")
+
 	for {
 		select {
-		case <-cr.Done():
-			// Program termination.
-			return
-		case <-crc:
-			// Updated context application data.
-			// Set the new one in current goroutine.
-			appCtx.Log().Errorf("context reload is not supported by runtime routine")
-			appCtx.RoutineDoneSend(appctx.ExitStatusFailure)
+		case <-app.SelfCtxDone():
+			cc.Log.Debugf("telegram bot: shutdown")
+			return nil
 		case e := <-queueCh:
 			if e != nil {
-				appCtx.Log().Errorf("bot queue processing error: %v", e)
-				appCtx.RoutineDoneSend(appctx.ExitStatusFailure)
-				return
+				cc.Log.WithFields(logrus.Fields{
+					"details": e,
+				}).Errorf("bot queue processing")
+				app.Shutdown(e)
+				return e
 			}
 		case e := <-updatesCh:
 			if e != nil {
-				appCtx.Log().Errorf("bot get updates error: %v", e)
-				appCtx.RoutineDoneSend(appctx.ExitStatusFailure)
-				return
+				cc.Log.WithFields(logrus.Fields{
+					"details": e,
+				}).Errorf("bot get updates")
+				app.Shutdown(e)
+				return e
 			}
 		}
 	}

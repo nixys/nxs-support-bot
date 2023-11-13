@@ -5,6 +5,7 @@ import (
 
 	gmysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	gormlogger "gorm.io/gorm/logger"
 )
 
 // DB it is a DB module context structure
@@ -29,9 +30,12 @@ func Connect(s Settings) (DB, error) {
 		s.Password,
 		s.Host,
 		s.Port,
-		s.Database)), &gorm.Config{})
+		s.Database)),
+		&gorm.Config{
+			Logger: gormlogger.Discard,
+		})
 	if err != nil {
-		return DB{}, err
+		return DB{}, fmt.Errorf("primedb connect: %w", err)
 	}
 
 	return DB{

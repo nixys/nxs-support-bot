@@ -2,10 +2,11 @@ package ctx
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/docker/go-units"
-	appctx "github.com/nixys/nxs-go-appctx/v2"
+	appctx "github.com/nixys/nxs-go-appctx/v3"
 	"github.com/nixys/nxs-support-bot/ds/primedb"
 	"github.com/nixys/nxs-support-bot/ds/redmine"
 	tgbot "github.com/nixys/nxs-support-bot/modules/bot"
@@ -14,6 +15,7 @@ import (
 	"github.com/nixys/nxs-support-bot/modules/localization"
 	"github.com/nixys/nxs-support-bot/modules/task-handlers/rdmnhndlr"
 	"github.com/nixys/nxs-support-bot/modules/users"
+	"github.com/sirupsen/logrus"
 )
 
 // Ctx defines application custom context
@@ -23,6 +25,7 @@ type Ctx struct {
 	Bot       *tgbot.Bot
 	API       apiSettings
 	Rdmnhndlr rdmnhndlr.RdmnHndlr
+	Log       *logrus.Logger
 }
 
 type apiSettings struct {
@@ -39,13 +42,25 @@ type feedbackSettings struct {
 	UserID    int64
 }
 
-// Init initiates application custom context
-func (c *Ctx) Init(opts appctx.CustomContextFuncOpts) (appctx.CfgData, error) {
+func AppCtxInit() (any, error) {
 
-	// Read config file
-	conf, err := confRead(opts.Config)
+	c := &Ctx{}
+
+	args, err := ArgsRead()
 	if err != nil {
-		return appctx.CfgData{}, err
+		return nil, err
+	}
+
+	conf, err := confRead(args.ConfigPath)
+	if err != nil {
+		tmpLogError("ctx init", err)
+		return nil, err
+	}
+
+	c.Log, err = logInit(conf.LogFile, conf.LogLevel)
+	if err != nil {
+		tmpLogError("ctx init", err)
+		return nil, err
 	}
 
 	// Set application context
@@ -60,7 +75,10 @@ func (c *Ctx) Init(opts appctx.CustomContextFuncOpts) (appctx.CfgData, error) {
 		Password: c.Conf.MySQL.Password,
 	})
 	if err != nil {
-		return appctx.CfgData{}, err
+		c.Log.WithFields(logrus.Fields{
+			"details": err,
+		}).Errorf("ctx init")
+		return nil, err
 	}
 
 	// Set redmine context
@@ -74,13 +92,19 @@ func (c *Ctx) Init(opts appctx.CustomContextFuncOpts) (appctx.CfgData, error) {
 		RedisHost: redisHost,
 	})
 	if err != nil {
-		return appctx.CfgData{}, err
+		c.Log.WithFields(logrus.Fields{
+			"details": err,
+		}).Errorf("ctx init")
+		return nil, err
 	}
 
 	// Localization init
 	lb, err := localization.Init(c.Conf.Localization.Path)
 	if err != nil {
-		return appctx.CfgData{}, err
+		c.Log.WithFields(logrus.Fields{
+			"details": err,
+		}).Errorf("ctx init")
+		return nil, err
 	}
 
 	var feedback *feedbackSettings
@@ -88,7 +112,10 @@ func (c *Ctx) Init(opts appctx.CustomContextFuncOpts) (appctx.CfgData, error) {
 
 		proj, err := rdmn.ProjectGetByIdentifier(c.Conf.Redmine.Feedback.ProjectIdentifier)
 		if err != nil {
-			return appctx.CfgData{}, err
+			c.Log.WithFields(logrus.Fields{
+				"details": err,
+			}).Errorf("ctx init")
+			return nil, err
 		}
 
 		feedback = &feedbackSettings{
@@ -117,7 +144,7 @@ func (c *Ctx) Init(opts appctx.CustomContextFuncOpts) (appctx.CfgData, error) {
 	// Set bot context
 	c.Bot, err = tgbot.Init(tgbot.Settings{
 		APIToken:   c.Conf.Telegram.APIToken,
-		Log:        opts.Log,
+		Log:        c.Log,
 		Cache:      c.Cache.C,
 		RedisHost:  redisHost,
 		LangBundle: lb,
@@ -126,7 +153,10 @@ func (c *Ctx) Init(opts appctx.CustomContextFuncOpts) (appctx.CfgData, error) {
 		Feedback:   (*tgbot.FeedbackSettings)(feedback),
 	})
 	if err != nil {
-		return appctx.CfgData{}, err
+		c.Log.WithFields(logrus.Fields{
+			"details": err,
+		}).Errorf("ctx init")
+		return nil, err
 	}
 
 	c.Rdmnhndlr = rdmnhndlr.Init(
@@ -141,33 +171,54 @@ func (c *Ctx) Init(opts appctx.CustomContextFuncOpts) (appctx.CfgData, error) {
 
 	c.API.ClientMaxBodySizeBytes, err = units.RAMInBytes(c.Conf.API.ClientMaxBodySize)
 	if err != nil {
-		return appctx.CfgData{}, err
+		c.Log.WithFields(logrus.Fields{
+			"details": err,
+		}).Errorf("ctx init")
+		return nil, err
 	}
 
 	c.Cache.TTL, err = time.ParseDuration(c.Conf.Cache.TTL)
 	if err != nil {
-		return appctx.CfgData{}, err
+		c.Log.WithFields(logrus.Fields{
+			"details": err,
+		}).Errorf("ctx init")
+		return nil, err
 	}
 
-	return appctx.CfgData{
-		LogFile:  c.Conf.LogFile,
-		LogLevel: c.Conf.LogLevel,
-		PidFile:  c.Conf.PidFile,
-	}, nil
+	return c, nil
 }
 
-// Reload reloads application custom context
-func (c *Ctx) Reload(opts appctx.CustomContextFuncOpts) (appctx.CfgData, error) {
-
-	opts.Log.Debug("reloading context")
-
-	return c.Init(opts)
+func tmpLogError(msg string, err error) {
+	l, _ := appctx.DefaultLogInit(os.Stderr, logrus.InfoLevel, &logrus.JSONFormatter{})
+	l.WithFields(logrus.Fields{
+		"details": err,
+	}).Errorf(msg)
 }
 
-// Free frees application custom context
-func (c *Ctx) Free(opts appctx.CustomContextFuncOpts) int {
+func logInit(file, level string) (*logrus.Logger, error) {
 
-	opts.Log.Debug("freeing context")
+	var (
+		f   *os.File
+		err error
+	)
 
-	return 0
+	switch file {
+	case "stdout":
+		f = os.Stdout
+	case "stderr":
+		f = os.Stderr
+	default:
+		f, err = os.OpenFile(file, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
+		if err != nil {
+			return nil, fmt.Errorf("log init: %w", err)
+		}
+	}
+
+	// Validate log level
+	l, err := logrus.ParseLevel(level)
+	if err != nil {
+		return nil, fmt.Errorf("log init: %w", err)
+	}
+
+	return appctx.DefaultLogInit(f, l, &logrus.JSONFormatter{})
 }

@@ -10,4 +10,5 @@ var (
 	ErrForbidden      = errors.New("forbidden")
 	ErrMalformedData  = errors.New("malformed data")
 	ErrUserNotSet     = errors.New("user not set")
+	ErrArgSuccessExit = errors.New("arg success exit")
 )

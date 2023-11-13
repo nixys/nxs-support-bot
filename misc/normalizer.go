@@ -1,6 +1,7 @@
 package misc
 
 import (
+	"fmt"
 	"os/user"
 	"strings"
 )
@@ -12,7 +13,7 @@ func DirNormalize(path string) (string, error) {
 
 	path, err = PathNormalize(path)
 	if err != nil {
-		return path, err
+		return path, fmt.Errorf("dir normalize: %w", err)
 	}
 
 	for strings.HasSuffix(path, "/") {
@@ -30,7 +31,7 @@ func PathNormalize(path string) (string, error) {
 
 		usr, err := user.Current()
 		if err != nil {
-			return path, err
+			return path, fmt.Errorf("path normalize: %w", err)
 		}
 
 		path = usr.HomeDir + "/" + strings.TrimPrefix(path, "~/")

@@ -1,54 +1,42 @@
 package appcache
 
 import (
-	"context"
 	"time"
 
-	appctx "github.com/nixys/nxs-go-appctx/v2"
-
+	appctx "github.com/nixys/nxs-go-appctx/v3"
 	"github.com/nixys/nxs-support-bot/ctx"
+	"github.com/sirupsen/logrus"
 )
 
-// Runtime executes the routine
-func Runtime(c context.Context, appCtx *appctx.AppContext, crc chan interface{}) {
+func Runtime(app appctx.App) error {
 
-	cc := appCtx.CustomCtx().(*ctx.Ctx)
+	cc := app.ValueGet().(*ctx.Ctx)
+
+	if err := cc.Cache.C.Update(); err != nil {
+		cc.Log.WithFields(logrus.Fields{
+			"details": err,
+		}).Errorf("cache runtime")
+		return err
+	}
+	cc.Log.Debugf("cache: successfully updated")
 
 	timer := time.NewTimer(cc.Cache.TTL)
 
-	if err := cacheUpdate(appCtx); err != nil {
-		appCtx.Log().Errorf("cache runtime error: %v", err)
-	}
-
 	for {
 		select {
+		case <-app.SelfCtxDone():
+			cc.Log.Debugf("cache: shutdown")
+			return nil
 		case <-timer.C:
-			// uwatch iterate
-			if err := cacheUpdate(appCtx); err != nil {
-				appCtx.Log().Errorf("cache runtime error: %v", err)
+			if err := cc.Cache.C.Update(); err != nil {
+				cc.Log.WithFields(logrus.Fields{
+					"details": err,
+				}).Errorf("cache runtime")
+				return err
 			}
+			cc.Log.Debugf("cache: successfully updated")
+
 			timer.Reset(cc.Cache.TTL)
-		case <-c.Done():
-			// Program termination.
-			// Write "Done" to log and complete the current goroutine.
-			appCtx.Log().Info("cache done")
-			return
-		case <-crc:
-			// Updated context application data.
-			// Set the new one in current goroutine.
-			appCtx.Log().Info("cache routine reload")
 		}
 	}
-}
-
-func cacheUpdate(appCtx *appctx.AppContext) error {
-
-	cc := appCtx.CustomCtx().(*ctx.Ctx)
-
-	if err := cc.Cache.C.Update(); err != nil {
-		appCtx.Log().Errorf("cache runtime error: %v", err)
-		return err
-	}
-
-	return nil
 }

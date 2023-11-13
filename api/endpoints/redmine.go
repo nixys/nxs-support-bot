@@ -6,11 +6,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	appctx "github.com/nixys/nxs-go-appctx/v2"
 	"github.com/nixys/nxs-support-bot/ctx"
 	"github.com/nixys/nxs-support-bot/misc"
 	"github.com/nixys/nxs-support-bot/modules/task-handlers/rdmnhndlr"
-
 	"github.com/sirupsen/logrus"
 )
 
@@ -154,7 +152,7 @@ type detailRx struct {
 	NewValue string `json:"new_value"`
 }
 
-func Redmine(appCtx *appctx.AppContext, c *gin.Context) RouteHandlerResponse {
+func Redmine(cc *ctx.Ctx, c *gin.Context) RouteHandlerResponse {
 
 	rx := issueActionRx{}
 
@@ -167,7 +165,7 @@ func Redmine(appCtx *appctx.AppContext, c *gin.Context) RouteHandlerResponse {
 	}
 
 	if err := json.Unmarshal(b, &rx); err != nil {
-		appCtx.Log().WithFields(logrus.Fields{
+		cc.Log.WithFields(logrus.Fields{
 			"details": err,
 		}).Warn("redmine endpoint")
 		return RouteHandlerResponse{
@@ -178,8 +176,6 @@ func Redmine(appCtx *appctx.AppContext, c *gin.Context) RouteHandlerResponse {
 
 	switch rx.Action {
 	case "issue_create":
-
-		cc := appCtx.CustomCtx().(*ctx.Ctx)
 
 		data := issueCreateRx{}
 
@@ -227,7 +223,7 @@ func Redmine(appCtx *appctx.AppContext, c *gin.Context) RouteHandlerResponse {
 					}(),
 				},
 			); err != nil {
-				appCtx.Log().WithFields(logrus.Fields{
+				cc.Log.WithFields(logrus.Fields{
 					"details": err,
 				}).Warn("redmine created issue endpoint")
 			}
@@ -239,12 +235,10 @@ func Redmine(appCtx *appctx.AppContext, c *gin.Context) RouteHandlerResponse {
 		}
 	case "issue_edit":
 
-		cc := appCtx.CustomCtx().(*ctx.Ctx)
-
 		data := issueUpdateRx{}
 
 		if err := json.Unmarshal(b, &data); err != nil {
-			appCtx.Log().WithFields(logrus.Fields{
+			cc.Log.WithFields(logrus.Fields{
 				"details": err,
 			}).Warn("redmine updated issue endpoint")
 			return RouteHandlerResponse{
@@ -327,7 +321,7 @@ func Redmine(appCtx *appctx.AppContext, c *gin.Context) RouteHandlerResponse {
 					}(),
 				},
 			); err != nil {
-				appCtx.Log().WithFields(logrus.Fields{
+				cc.Log.WithFields(logrus.Fields{
 					"details": err,
 				}).Warn("redmine updated issue endpoint")
 			}

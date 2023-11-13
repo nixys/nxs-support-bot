@@ -3,10 +3,8 @@ package endpoints
 import (
 	"net/http"
 
-	"github.com/nixys/nxs-support-bot/ctx"
-
 	"github.com/gin-gonic/gin"
-	appctx "github.com/nixys/nxs-go-appctx/v2"
+	"github.com/nixys/nxs-support-bot/ctx"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,23 +19,23 @@ type RouteHandlers struct {
 	DataTransform RouteDataTransformHandler
 }
 
-type RouteHandler func(*appctx.AppContext, *gin.Context) RouteHandlerResponse
+type RouteHandler func(*ctx.Ctx, *gin.Context) RouteHandlerResponse
 type RouteDataTransformHandler func(any, string) any
 
-func RouteHandlerDefault(appCtx *appctx.AppContext, handlers RouteHandlers) gin.HandlerFunc {
+func RouteHandlerDefault(cc *ctx.Ctx, handler RouteHandlers) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		if handlers.Handler == nil {
-			appCtx.Log().Warn("route handler not specified")
+		if handler.Handler == nil {
+			cc.Log.Warn("route handler not specified")
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 
-		r := handlers.Handler(appCtx, c)
+		r := handler.Handler(cc, c)
 
 		var d interface{}
-		if handlers.DataTransform != nil {
-			d = handlers.DataTransform(r.RAWData, r.Message)
+		if handler.DataTransform != nil {
+			d = handler.DataTransform(r.RAWData, r.Message)
 		} else {
 			d = r.RAWData
 		}
@@ -50,10 +48,10 @@ func RouteHandlerDefault(appCtx *appctx.AppContext, handlers RouteHandlers) gin.
 	}
 }
 
-func Logger(appCtx *appctx.AppContext) gin.HandlerFunc {
+func Logger(log *logrus.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
-		appCtx.Log().WithFields(logrus.Fields{
+		log.WithFields(logrus.Fields{
 			"type":      "accesslog",
 			"remote":    c.RemoteIP(),
 			"method":    c.Request.Method,
@@ -64,10 +62,9 @@ func Logger(appCtx *appctx.AppContext) gin.HandlerFunc {
 	}
 }
 
-func RequestSizeLimiter(appCtx *appctx.AppContext) gin.HandlerFunc {
+func RequestSizeLimiter(limit int64) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cc := appCtx.CustomCtx().(*ctx.Ctx)
-		if c.Request.ContentLength > cc.API.ClientMaxBodySizeBytes {
+		if c.Request.ContentLength > limit {
 			c.AbortWithStatus(http.StatusRequestEntityTooLarge)
 		}
 	}
