@@ -20,16 +20,23 @@ import (
 
 // Ctx defines application custom context
 type Ctx struct {
-	Conf      confOpts
 	Cache     cacheSettings
 	Bot       *tgbot.Bot
-	API       apiSettings
+	API       apiCtx
 	Rdmnhndlr rdmnhndlr.RdmnHndlr
 	Log       *logrus.Logger
 }
 
-type apiSettings struct {
+type apiCtx struct {
+	Bind                   string
+	TLS                    *apiTLSCtx
 	ClientMaxBodySizeBytes int64
+	RedmineSecretToken     string
+}
+
+type apiTLSCtx struct {
+	CertFile string
+	KeyFie   string
 }
 
 type cacheSettings struct {
@@ -63,16 +70,13 @@ func AppCtxInit() (any, error) {
 		return nil, err
 	}
 
-	// Set application context
-	c.Conf = conf
-
 	// Connect to MySQL
 	primeDB, err := primedb.Connect(primedb.Settings{
-		Host:     c.Conf.MySQL.Host,
-		Port:     c.Conf.MySQL.Port,
-		Database: c.Conf.MySQL.DB,
-		User:     c.Conf.MySQL.User,
-		Password: c.Conf.MySQL.Password,
+		Host:     conf.MySQL.Host,
+		Port:     conf.MySQL.Port,
+		Database: conf.MySQL.DB,
+		User:     conf.MySQL.User,
+		Password: conf.MySQL.Password,
 	})
 	if err != nil {
 		c.Log.WithFields(logrus.Fields{
@@ -82,9 +86,9 @@ func AppCtxInit() (any, error) {
 	}
 
 	// Set redmine context
-	rdmn := redmine.Init(c.Conf.Redmine.Host, c.Conf.Redmine.Key)
+	rdmn := redmine.Init(conf.Redmine.Host, conf.Redmine.Key)
 
-	redisHost := fmt.Sprintf("%s:%d", c.Conf.Redis.Host, c.Conf.Redis.Port)
+	redisHost := fmt.Sprintf("%s:%d", conf.Redis.Host, conf.Redis.Port)
 
 	// Set cache
 	c.Cache.C, err = cache.Init(cache.Settings{
@@ -99,7 +103,7 @@ func AppCtxInit() (any, error) {
 	}
 
 	// Localization init
-	lb, err := localization.Init(c.Conf.Localization.Path)
+	lb, err := localization.Init(conf.Localization.Path)
 	if err != nil {
 		c.Log.WithFields(logrus.Fields{
 			"details": err,
@@ -108,9 +112,9 @@ func AppCtxInit() (any, error) {
 	}
 
 	var feedback *feedbackSettings
-	if c.Conf.Redmine.Feedback != nil {
+	if conf.Redmine.Feedback != nil {
 
-		proj, err := rdmn.ProjectGetByIdentifier(c.Conf.Redmine.Feedback.ProjectIdentifier)
+		proj, err := rdmn.ProjectGetByIdentifier(conf.Redmine.Feedback.ProjectIdentifier)
 		if err != nil {
 			c.Log.WithFields(logrus.Fields{
 				"details": err,
@@ -120,7 +124,7 @@ func AppCtxInit() (any, error) {
 
 		feedback = &feedbackSettings{
 			ProjectID: proj.ID,
-			UserID:    c.Conf.Redmine.Feedback.UserID,
+			UserID:    conf.Redmine.Feedback.UserID,
 		}
 	}
 
@@ -143,7 +147,7 @@ func AppCtxInit() (any, error) {
 
 	// Set bot context
 	c.Bot, err = tgbot.Init(tgbot.Settings{
-		APIToken:   c.Conf.Telegram.APIToken,
+		APIToken:   conf.Telegram.APIToken,
 		Log:        c.Log,
 		Cache:      c.Cache.C,
 		RedisHost:  redisHost,
@@ -169,7 +173,7 @@ func AppCtxInit() (any, error) {
 		},
 	)
 
-	c.API.ClientMaxBodySizeBytes, err = units.RAMInBytes(c.Conf.API.ClientMaxBodySize)
+	bts, err := units.RAMInBytes(conf.API.ClientMaxBodySize)
 	if err != nil {
 		c.Log.WithFields(logrus.Fields{
 			"details": err,
@@ -177,7 +181,22 @@ func AppCtxInit() (any, error) {
 		return nil, err
 	}
 
-	c.Cache.TTL, err = time.ParseDuration(c.Conf.Cache.TTL)
+	c.API = apiCtx{
+		Bind: conf.API.Bind,
+		TLS: func() *apiTLSCtx {
+			if conf.API.TLS == nil {
+				return nil
+			}
+			return &apiTLSCtx{
+				CertFile: conf.API.TLS.CertFile,
+				KeyFie:   conf.API.TLS.KeyFie,
+			}
+		}(),
+		ClientMaxBodySizeBytes: bts,
+		RedmineSecretToken:     conf.API.RedmineSecretToken,
+	}
+
+	c.Cache.TTL, err = time.ParseDuration(conf.Cache.TTL)
 	if err != nil {
 		c.Log.WithFields(logrus.Fields{
 			"details": err,

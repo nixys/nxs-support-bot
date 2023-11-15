@@ -21,7 +21,7 @@ func RoutesSet(cc *ctx.Ctx) *gin.Engine {
 
 		redmine := v1.Group("/redmine")
 		{
-			redmine.Use(endpoints.AuthorizeRedmine(cc.Conf.API.RedmineSecretToken))
+			redmine.Use(endpoints.AuthorizeRedmine(cc.API.RedmineSecretToken))
 
 			redmine.POST("", endpoints.RouteHandlerDefault(cc, endpoints.RouteHandlers{
 				Handler: endpoints.Redmine,

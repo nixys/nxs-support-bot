@@ -50,7 +50,7 @@ func servStart(cc *ctx.Ctx) *httpServerContext {
 
 	s := &httpServerContext{
 		Server: http.Server{
-			Addr:         cc.Conf.API.Bind,
+			Addr:         cc.API.Bind,
 			ReadTimeout:  10 * time.Second,
 			WriteTimeout: 10 * time.Second,
 			Handler:      api.RoutesSet(cc),
@@ -60,8 +60,8 @@ func servStart(cc *ctx.Ctx) *httpServerContext {
 
 	go func() {
 		cc.Log.Debugf("api: starting")
-		if cc.Conf.API.TLS != nil {
-			if err := s.ListenAndServeTLS(cc.Conf.API.TLS.CertFile, cc.Conf.API.TLS.KeyFie); err != nil {
+		if cc.API.TLS != nil {
+			if err := s.ListenAndServeTLS(cc.API.TLS.CertFile, cc.API.TLS.KeyFie); err != nil {
 				cc.Log.WithFields(logrus.Fields{
 					"details": err,
 				}).Debugf("api: server listen tls")
