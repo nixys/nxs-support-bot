@@ -12,6 +12,7 @@ nxs-support-bot lets you interact with your task tracker (at present supported R
 - Create new issues in your Redmine using Telegram. Select a project and priority you need for a new issue
 - Operate with files and media
 - `Feedback` project to communicate with unauthorized users and get feedback
+- Fully localizable interface in appropriate with user selected language
 - Compatible with Redmine 4.2 and 5.0
 
 ### Who use this tool
@@ -159,7 +160,7 @@ After you've installed and configured the Redmine, do the following to take the 
 
 ##### General
 
-Check that option `Enable REST web service` on `/settings?tab=api` page in your Redmine is enabled.
+Check the option `Enable REST web service` on `/settings?tab=api` page in your Redmine is enabled.
 
 Then create a new one (or take an existing) account with administrator permissions. In the account settings page look for an `API access key` and use this value as a `key` option in [Redmine settings section](#redmine-settings).
 
@@ -171,15 +172,13 @@ First create a new one (or take an existing) project to store that issues. Take 
 
 Last you need to do is to create a new one (or take an existing) feedback account with no administrator permissions and use its ID as an `userID` option in [Redmine feedback settings section](#feedback-settings).
 
-#### Nixys Chat Redmine plugin
+#### nxs-chat-redmine plugin
 
-Install a [Nixys Chat Redmine plugin](https://github.com/nixys/nxs-chat-redmine) into your Redmine. The only two things you have to configure this plugin (at the `/settings/plugin/nxs_chat` page in your Redmine):
-- Set `URL for notifications`. This URL is used by plugin to send issue updates to the Bot. Use a `secretToken` value from [API settings](#api-settings) to compose an URL. An URL format you need to use is following: `{PROTO}://{DOMAIN}/v1/redmine?token={SECRET_TOKEN}`
-- Set `Disable SSL verification`. If your nxs-support-bot and Redmine both works in the local network or you do not use the SSL for Bot you need to set this option.
+Install and configure [nxs-chat-redmine](https://github.com/nixys/nxs-chat-redmine) plugin in your Redmine.
 
 #### nxs-support-bot
 
-Now you need to set up the nxs-support-bot config file (see options description in [settings section](#settings)). To configure the Bot you need to change the file located according to the way you choose to install:
+Now you need to set up nxs-support-bot config file (see options description in [settings section](#settings)). To configure the Bot you need to change the file located according to the way you choose to install:
 - For `Docker Compose`: file `.deploy/docker-compose/.env`
 - For `Kubernetes`: file `.deploy/kubernetes/values.yaml`, secret `nxs-support-bot-env` and configmap `nxs-support-bot-config`
 
@@ -188,6 +187,8 @@ If you didn't use [nxs-chat-srv](https://github.com/nixys/nxs-chat-srv) skip thi
 Otherwise you need to migrate your old data to new version of Bot with [nxs-support-bot-migrate](https://github.com/nixys/nxs-support-bot-migrate). See the section below for details.
 
 ##### Update from nxs-chat-srv
+
+*Only for users of old version*
 
 Choose the way for your installation method.
 
@@ -228,17 +229,18 @@ Go back to the [Kubernetes](#kubernetes) and follow the instructions to complete
 ## Roadmap
 
 Following features are already in backlog for our development team and will be released soon:
-- Notifications to the mention users
-- Default language in accordance with Telegram lang settings for user accounts
-- Ability to specify trackers and other options for new issues
-- Ability to follow/unfollow to an issue from Telegram
-- PgSQL support
+- [x] Notifications to the mention users
+- [ ] Default language in accordance with Telegram lang settings for user accounts
+- [ ] Ability to specify trackers and other options for new issues
+- [ ] Ability to follow/unfollow to an issue from Telegram
+- [ ] PgSQL support
 
 ## Feedback
 
 For support and feedback please contact me:
-- telegram: [@borisershov](https://t.me/borisershov)
-- e-mail: b.ershov@nixys.ru
+- [Issues](https://github.com/nixys/nxs-support-bot/issues)
+- Telegram: [@borisershov](https://t.me/borisershov)
+- E-mail: b.ershov@nixys.io
 
 ## License
 
