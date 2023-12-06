@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nixys/nxs-support-bot/api/handlers"
 	"github.com/nixys/nxs-support-bot/ctx"
 	"github.com/nixys/nxs-support-bot/misc"
 	"github.com/nixys/nxs-support-bot/modules/task-handlers/rdmnhndlr"
@@ -152,13 +153,13 @@ type detailRx struct {
 	NewValue string `json:"new_value"`
 }
 
-func Redmine(cc *ctx.Ctx, c *gin.Context) RouteHandlerResponse {
+func Redmine(cc *ctx.Ctx, c *gin.Context) handlers.RouteHandlerResponse {
 
 	rx := issueActionRx{}
 
 	b, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		return RouteHandlerResponse{
+		return handlers.RouteHandlerResponse{
 			StatusCode: http.StatusBadRequest,
 			Message:    err.Error(),
 		}
@@ -168,7 +169,7 @@ func Redmine(cc *ctx.Ctx, c *gin.Context) RouteHandlerResponse {
 		cc.Log.WithFields(logrus.Fields{
 			"details": err,
 		}).Warn("redmine endpoint")
-		return RouteHandlerResponse{
+		return handlers.RouteHandlerResponse{
 			StatusCode: http.StatusBadRequest,
 			Message:    "incorrect body json",
 		}
@@ -180,7 +181,7 @@ func Redmine(cc *ctx.Ctx, c *gin.Context) RouteHandlerResponse {
 		data := issueCreateRx{}
 
 		if err := json.Unmarshal(b, &data); err != nil {
-			return RouteHandlerResponse{
+			return handlers.RouteHandlerResponse{
 				StatusCode: http.StatusBadRequest,
 				Message:    "incorrect body json",
 			}
@@ -197,9 +198,24 @@ func Redmine(cc *ctx.Ctx, c *gin.Context) RouteHandlerResponse {
 						ID:   data.IssueCreateDataRx.IssueCreateObjectRx.Project.ID,
 						Name: data.IssueCreateDataRx.IssueCreateObjectRx.Project.Name,
 					},
-					Tracker:        data.IssueCreateDataRx.IssueCreateObjectRx.Tracker,
-					Status:         data.IssueCreateDataRx.IssueCreateObjectRx.Status,
-					Priority:       data.IssueCreateDataRx.IssueCreateObjectRx.Priority,
+					Tracker: misc.IDNameLocale{
+						ID: data.IssueCreateDataRx.IssueCreateObjectRx.Tracker.ID,
+						Name: map[string]string{
+							misc.IDNameLocaleDefaultLang: data.IssueCreateDataRx.IssueCreateObjectRx.Tracker.Name,
+						},
+					},
+					Status: misc.IDNameLocale{
+						ID: data.IssueCreateDataRx.IssueCreateObjectRx.Status.ID,
+						Name: map[string]string{
+							misc.IDNameLocaleDefaultLang: data.IssueCreateDataRx.IssueCreateObjectRx.Status.Name,
+						},
+					},
+					Priority: misc.IDNameLocale{
+						ID: data.IssueCreateDataRx.IssueCreateObjectRx.Priority.ID,
+						Name: map[string]string{
+							misc.IDNameLocaleDefaultLang: data.IssueCreateDataRx.IssueCreateObjectRx.Priority.Name,
+						},
+					},
 					Author:         data.IssueCreateDataRx.IssueCreateObjectRx.Author,
 					AssignedTo:     data.IssueCreateDataRx.IssueCreateObjectRx.AssignedTo,
 					Watchers:       data.IssueCreateDataRx.IssueCreateObjectRx.Watchers,
@@ -229,7 +245,7 @@ func Redmine(cc *ctx.Ctx, c *gin.Context) RouteHandlerResponse {
 			}
 		}()
 
-		return RouteHandlerResponse{
+		return handlers.RouteHandlerResponse{
 			StatusCode: http.StatusOK,
 			Message:    "success",
 		}
@@ -241,7 +257,7 @@ func Redmine(cc *ctx.Ctx, c *gin.Context) RouteHandlerResponse {
 			cc.Log.WithFields(logrus.Fields{
 				"details": err,
 			}).Warn("redmine updated issue endpoint")
-			return RouteHandlerResponse{
+			return handlers.RouteHandlerResponse{
 				StatusCode: http.StatusBadRequest,
 				Message:    "incorrect body json",
 			}
@@ -258,10 +274,34 @@ func Redmine(cc *ctx.Ctx, c *gin.Context) RouteHandlerResponse {
 						ID:   data.IssueUpdateDataRx.IssueUpdateObjectRx.Project.ID,
 						Name: data.IssueUpdateDataRx.IssueUpdateObjectRx.Project.Name,
 					},
-					Tracker:    data.IssueUpdateDataRx.IssueUpdateObjectRx.Tracker,
-					Status:     data.IssueUpdateDataRx.IssueUpdateObjectRx.Status,
-					Priority:   data.IssueUpdateDataRx.IssueUpdateObjectRx.Priority,
-					Category:   data.IssueUpdateDataRx.IssueUpdateObjectRx.Category,
+					Tracker: misc.IDNameLocale{
+						ID: data.IssueUpdateDataRx.IssueUpdateObjectRx.Tracker.ID,
+						Name: map[string]string{
+							misc.IDNameLocaleDefaultLang: data.IssueUpdateDataRx.IssueUpdateObjectRx.Tracker.Name,
+						},
+					},
+					//data.IssueUpdateDataRx.IssueUpdateObjectRx.Tracker,
+					Status: misc.IDNameLocale{
+						ID: data.IssueUpdateDataRx.IssueUpdateObjectRx.Status.ID,
+						Name: map[string]string{
+							misc.IDNameLocaleDefaultLang: data.IssueUpdateDataRx.IssueUpdateObjectRx.Status.Name,
+						},
+					},
+					//data.IssueUpdateDataRx.IssueUpdateObjectRx.Status,
+					Priority: misc.IDNameLocale{
+						ID: data.IssueUpdateDataRx.IssueUpdateObjectRx.Priority.ID,
+						Name: map[string]string{
+							misc.IDNameLocaleDefaultLang: data.IssueUpdateDataRx.IssueUpdateObjectRx.Priority.Name,
+						},
+					},
+					//data.IssueUpdateDataRx.IssueUpdateObjectRx.Priority,
+					Category: misc.IDNameLocale{
+						ID: data.IssueUpdateDataRx.IssueUpdateObjectRx.Category.ID,
+						Name: map[string]string{
+							misc.IDNameLocaleDefaultLang: data.IssueUpdateDataRx.IssueUpdateObjectRx.Category.Name,
+						},
+					},
+					//data.IssueUpdateDataRx.IssueUpdateObjectRx.Category,
 					Author:     data.IssueUpdateDataRx.IssueUpdateObjectRx.Author,
 					AssignedTo: data.IssueUpdateDataRx.IssueUpdateObjectRx.AssignedTo,
 					Watchers:   data.IssueUpdateDataRx.IssueUpdateObjectRx.Watchers,
@@ -327,13 +367,13 @@ func Redmine(cc *ctx.Ctx, c *gin.Context) RouteHandlerResponse {
 			}
 		}()
 
-		return RouteHandlerResponse{
+		return handlers.RouteHandlerResponse{
 			StatusCode: http.StatusOK,
 			Message:    "success",
 		}
 	}
 
-	return RouteHandlerResponse{
+	return handlers.RouteHandlerResponse{
 		StatusCode: http.StatusBadRequest,
 		Message:    "unknown issue action",
 	}

@@ -14,10 +14,10 @@ type UpdatedData struct {
 	Description    string
 	IsPrivateIssue bool
 	Project        misc.IDName
-	Tracker        misc.IDName
-	Category       misc.IDName
-	Status         misc.IDName
-	Priority       misc.IDName
+	Tracker        misc.IDNameLocale
+	Category       misc.IDNameLocale
+	Status         misc.IDNameLocale
+	Priority       misc.IDNameLocale
 	Author         misc.IDName
 	AssignedTo     misc.IDName
 	MentionedUsers []misc.IDName
@@ -51,10 +51,10 @@ type renderData struct {
 	IsPrivateNotes bool
 	Description    *string
 	AssignedTo     *string
-	Status         *string
-	Priority       *string
-	Tracker        *string
-	Category       *string
+	Status         *misc.IDNameLocale
+	Priority       *misc.IDNameLocale
+	Tracker        *misc.IDNameLocale
+	Category       *misc.IDNameLocale
 	Attachments    []int64
 }
 
@@ -92,16 +92,16 @@ func (rh *RdmnHndlr) IssueUpdated(data UpdatedData) error {
 				rd.AssignedTo = &data.AssignedTo.Name
 			case "status_id":
 				isUpdated = true
-				rd.Status = &data.Status.Name
+				rd.Status = &data.Status
 			case "priority_id":
 				isUpdated = true
-				rd.Priority = &data.Priority.Name
+				rd.Priority = &data.Priority
 			case "tracker_id":
 				isUpdated = true
-				rd.Tracker = &data.Tracker.Name
+				rd.Tracker = &data.Tracker
 			case "category_id":
 				isUpdated = true
-				rd.Category = &data.Category.Name
+				rd.Category = &data.Category
 			case "description":
 				isUpdated = true
 				s := d.NewValue
@@ -190,10 +190,9 @@ func issueUpdatedMessage(rh *RdmnHndlr, lang string, data any) (string, error) {
 			"Author":         d.Author.Name,
 			"IsPrivateIssue": d.IsPrivateIssue,
 			"AssignedTo":     d.AssignedTo,
-			"Status":         d.Status,
-			"Priority":       d.Priority,
-			"Tracker":        d.Tracker,
-			"Category":       d.Category,
+			"Status":         d.Status.ValueGet(lang),
+			"Tracker":        d.Tracker.ValueGet(lang),
+			"Category":       d.Category.ValueGet(lang),
 			"Notes":          d.Notes,
 			"IsPrivateNotes": d.IsPrivateNotes,
 			"Description":    d.Description,
@@ -227,10 +226,10 @@ func issueUpdatedFeedbackMessage(rh *RdmnHndlr, lang string, data any) (string, 
 			"Author":         d.Author.Name,
 			"IsPrivateIssue": d.IsPrivateIssue,
 			"AssignedTo":     d.AssignedTo,
-			"Status":         d.Status,
-			"Priority":       d.Priority,
-			"Tracker":        d.Tracker,
-			"Category":       d.Category,
+			"Status":         d.Status.ValueGet(lang),
+			"Priority":       d.Priority.ValueGet(lang),
+			"Tracker":        d.Tracker.ValueGet(lang),
+			"Category":       d.Category.ValueGet(lang),
 			"Notes":          d.Notes,
 			"IsPrivateNotes": d.IsPrivateNotes,
 			"Description":    d.Description,

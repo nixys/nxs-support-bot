@@ -13,9 +13,9 @@ type CreatedData struct {
 	Description    string
 	IsPrivateIssue bool
 	Project        misc.IDName
-	Tracker        misc.IDName
-	Status         misc.IDName
-	Priority       misc.IDName
+	Tracker        misc.IDNameLocale
+	Status         misc.IDNameLocale
+	Priority       misc.IDNameLocale
 	Author         misc.IDName
 	AssignedTo     misc.IDName
 	MentionedUsers []misc.IDName
@@ -76,8 +76,8 @@ func issueCreatedMessage(rh *RdmnHndlr, lang string, data any) (string, error) {
 			"IssueSubject":   d.Subject,
 			"IssueURL":       rh.iss.IssueURL(d.ID),
 			"Author":         d.Author.Name,
-			"Status":         d.Status.Name,
-			"Priority":       d.Priority.Name,
+			"Status":         d.Status.ValueGet(lang),
+			"Priority":       d.Priority.ValueGet(lang),
 			"AssignedTo":     d.AssignedTo.Name,
 			"IsPrivateIssue": d.IsPrivateIssue,
 			"Description":    d.Description,
