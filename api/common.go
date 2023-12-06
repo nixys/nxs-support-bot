@@ -28,19 +28,3 @@ func RequestSizeLimiter(limit int64) gin.HandlerFunc {
 		}
 	}
 }
-
-func CORSMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-
-		//c.Writer.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "X-CustomHeader, Keep-Alive, User-Agent, X-Requested-With, X-Auth-Health-Key, X-Auth-Key, If-Modified-Since, Cache-Control, Content-Type")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS")
-
-		if c.Request.Method == http.MethodOptions {
-			c.AbortWithStatus(http.StatusNoContent)
-			return
-		}
-	}
-}

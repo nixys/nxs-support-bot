@@ -15,7 +15,6 @@ func RoutesSet(cc *ctx.Ctx) *gin.Engine {
 	router := gin.New()
 
 	router.Use(Logger(cc.Log))
-	router.Use(CORSMiddleware())
 	router.Use(RequestSizeLimiter(cc.API.ClientMaxBodySizeBytes))
 
 	v1 := router.Group("/v1")
