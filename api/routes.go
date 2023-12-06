@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/nixys/nxs-support-bot/api/endpoints"
+	endpointsv1 "github.com/nixys/nxs-support-bot/api/endpoints/v1"
 	endpointsv2 "github.com/nixys/nxs-support-bot/api/endpoints/v2"
 	"github.com/nixys/nxs-support-bot/api/handlers"
 	"github.com/nixys/nxs-support-bot/ctx"
@@ -22,10 +22,10 @@ func RoutesSet(cc *ctx.Ctx) *gin.Engine {
 	{
 		redmine := v1.Group("/redmine")
 		{
-			redmine.Use(endpoints.AuthorizeRedmine(cc.API.RedmineSecretToken))
+			redmine.Use(endpointsv1.AuthorizeRedmine(cc.API.RedmineSecretToken))
 
 			redmine.POST("", handlers.RouteHandlerDefault(cc, handlers.RouteHandlers{
-				Handler: endpoints.Redmine,
+				Handler: endpointsv1.Redmine,
 			}))
 		}
 	}
