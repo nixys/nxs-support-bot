@@ -70,5 +70,6 @@ func langSwitch(b *i18n.Bundle, tag string) (Lang, error) {
 	return Lang{
 		l:          l,
 		botButtons: bb,
+		t:          tag,
 	}, nil
 }

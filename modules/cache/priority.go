@@ -9,9 +9,17 @@ import (
 
 type Priority struct {
 	ID        int64
+	Name      map[string]string
+	IsDefault bool
+}
+
+type PriorityLocale struct {
+	ID        int64
 	Name      string
 	IsDefault bool
 }
+
+const PriorityLangDefault = "default"
 
 // PriorityGetDefault gets default priority from cache (Redmine)
 func (c *Cache) PriorityGetDefault() (Priority, error) {
@@ -28,6 +36,27 @@ func (c *Cache) PriorityGetDefault() (Priority, error) {
 	}
 
 	return Priority{}, misc.ErrNotFound
+}
+
+func (c *Cache) PriorityGetDefaultLocale(lang string) (PriorityLocale, error) {
+
+	priorities, err := c.rds.PrioritiesGet()
+	if err != nil {
+		return PriorityLocale{}, err
+	}
+
+	for _, p := range priorities {
+		if p.IsDefault == true {
+			prio := Priority(p)
+			return PriorityLocale{
+				ID:        prio.ID,
+				Name:      prio.NameLocale(lang),
+				IsDefault: prio.IsDefault,
+			}, nil
+		}
+	}
+
+	return PriorityLocale{}, misc.ErrNotFound
 }
 
 // PriorityGetByID gets priority by specified ID from cache (Redmine)
@@ -47,6 +76,27 @@ func (c *Cache) PriorityGetByID(id int64) (Priority, error) {
 	return Priority{}, misc.ErrNotFound
 }
 
+func (c *Cache) PriorityGetByIDLocale(id int64, lang string) (PriorityLocale, error) {
+
+	priorities, err := c.rds.PrioritiesGet()
+	if err != nil {
+		return PriorityLocale{}, err
+	}
+
+	for _, p := range priorities {
+		if p.ID == id {
+			prio := Priority(p)
+			return PriorityLocale{
+				ID:        prio.ID,
+				Name:      prio.NameLocale(lang),
+				IsDefault: prio.IsDefault,
+			}, nil
+		}
+	}
+
+	return PriorityLocale{}, misc.ErrNotFound
+}
+
 func (c *Cache) PrioritiesGet() ([]Priority, error) {
 
 	var priorities []Priority
@@ -61,6 +111,30 @@ func (c *Cache) PrioritiesGet() ([]Priority, error) {
 	}
 
 	return priorities, nil
+}
+
+func (c *Cache) PrioritiesGetLocale(lang string) ([]PriorityLocale, error) {
+
+	var pls []PriorityLocale
+
+	rp, err := c.rds.PrioritiesGet()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, p := range rp {
+		prio := Priority(p)
+		pls = append(
+			pls,
+			PriorityLocale{
+				ID:        prio.ID,
+				Name:      prio.NameLocale(lang),
+				IsDefault: prio.IsDefault,
+			},
+		)
+	}
+
+	return pls, nil
 }
 
 // prioritiesUpdate updates priorities cache with new data
@@ -84,4 +158,12 @@ func (c *Cache) prioritiesUpdate() error {
 	}
 
 	return nil
+}
+
+func (p Priority) NameLocale(lang string) string {
+	n, b := p.Name[lang]
+	if b == false {
+		return PriorityLangDefault
+	}
+	return n
 }

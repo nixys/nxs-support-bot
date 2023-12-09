@@ -11,6 +11,11 @@ import (
 type Lang struct {
 	l          *i18n.Localizer
 	botButtons map[Button]string
+	t          string
+}
+
+func (l *Lang) GetTag() string {
+	return l.t
 }
 
 func (l *Lang) BotButton(button Button) string {

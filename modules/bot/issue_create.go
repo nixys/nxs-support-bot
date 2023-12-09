@@ -63,7 +63,7 @@ func issueCreateState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, err
 			proj = mms[0]
 		}
 
-		prio, err := bCtx.c.PriorityGetDefault()
+		prio, err := bCtx.c.PriorityGetDefaultLocale(c.l.GetTag())
 		if err != nil {
 			return tg.StateHandlerRes{}, err
 		}

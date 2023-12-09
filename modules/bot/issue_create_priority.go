@@ -34,7 +34,7 @@ func issueCreatePriorityState(t *tg.Telegram, sess *tg.Session) (tg.StateHandler
 		return tg.StateHandlerRes{}, err
 	}
 
-	priorities, err := bCtx.c.PrioritiesGet()
+	priorities, err := bCtx.c.PrioritiesGetLocale(c.l.GetTag())
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -87,6 +87,11 @@ func issueCreatePriorityCallback(t *tg.Telegram, sess *tg.Session, identifier st
 
 		bCtx := botCtxGet(t)
 
+		c, err := userEnvGet(t, sess)
+		if err != nil {
+			return tg.CallbackHandlerRes{}, err
+		}
+
 		if _, err := sess.SlotGet(slotNameIssueCreate, &issue); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
@@ -96,7 +101,7 @@ func issueCreatePriorityCallback(t *tg.Telegram, sess *tg.Session, identifier st
 			return tg.CallbackHandlerRes{}, err
 		}
 
-		prio, err := bCtx.c.PriorityGetByID(pID)
+		prio, err := bCtx.c.PriorityGetByIDLocale(pID, c.l.GetTag())
 		if err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}

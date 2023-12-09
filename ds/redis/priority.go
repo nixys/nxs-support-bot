@@ -9,9 +9,9 @@ import (
 const prioritiesKey = "cache:priorities"
 
 type Priority struct {
-	ID        int64  `json:"id"`
-	Name      string `json:"name"`
-	IsDefault bool   `json:"isDefault"`
+	ID        int64             `json:"id"`
+	Name      map[string]string `json:"name"`
+	IsDefault bool              `json:"isDefault"`
 }
 
 func (r *Redis) PrioritiesSave(priorities []Priority) error {

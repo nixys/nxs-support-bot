@@ -176,6 +176,14 @@ Last you need to do is to create a new one (or take an existing) feedback accoun
 
 Install and configure [nxs-chat-redmine](https://github.com/nixys/nxs-chat-redmine) plugin in your Redmine.
 
+Choose the version in accordance with compatibility table:
+
+| `nxs-support-bot` | [nxs-chat-redmine](https://github.com/nixys/nxs-chat-redmine) |
+| --- | --- |
+| v1.0.0 - v1.2.0 | v1.5 - v3.2.0 |
+| v1.3.0 | v4.0.0 |
+| v1.4.0 | v4.1.0 |
+
 #### nxs-support-bot
 
 Now you need to set up nxs-support-bot config file (see options description in [settings section](#settings)). To configure the Bot you need to change the file located according to the way you choose to install:
